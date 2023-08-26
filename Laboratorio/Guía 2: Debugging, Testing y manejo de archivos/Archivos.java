@@ -17,8 +17,8 @@ class Archivos {
 
     float[][] leerMatriz(Scanner entrda, int filas, int columnas) {
         float[][] m = new float[filas][columnas];
-        for (int i=0; i<m.length; i++){
-            for (int j=0; j<m[0].length; j++){
+        for (int i=0; i<filas; i++){
+            for (int j=0; j<columnas; j++){
                 m[i][j] = entrda.nextFloat();
             }
         }
@@ -27,13 +27,14 @@ class Archivos {
 
     void imprimirPiramide(PrintStream salida, int alto) {
         int espacios = alto-1;
+        int piso = (2*alto)-1;
         
         while(espacios >= 0){
             for(int i=0; i<espacios; i++){ //primeros espacios
                 salida.print(" ");
             }
 
-            int cantAsteriscos = 9 - 2*espacios;   //asteriscos
+            int cantAsteriscos = piso - 2*espacios; //asteriscos
             for(int i=0; i<cantAsteriscos; i++){
                 salida.print("*");
             }
@@ -48,7 +49,4 @@ class Archivos {
         salida.close();
     }
 }
-
-
-
 
