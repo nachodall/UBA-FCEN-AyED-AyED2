@@ -1,0 +1,65 @@
+1.
+TAD Rectangulo
+TAD punto es real x real #ta bien?
+
+Observadores{
+    obs base: real
+    obs altura: real
+    obs vertice: punto
+}
+
+Operaciones{
+    proc rotar(inout r:Rectangulo){
+        requiere:{True}
+        asegura:{r.base = old(r).altura && r.altura = old(r).base && r.vertice = old(r).vertice}
+    }
+
+    proc trasladar(inout r:Rectangulo, in p: punto){
+        requiere:{True}
+        asegura:{r.vertice = punto}
+        asegura:{r.base = old(r).base && r.altura = old(r).altura}
+    }
+
+    proc escalar(inout r:Rectangulo, in e:real){ #PUEDE ENTRAR EL e??
+        requiere:{True}
+        asegura:{r.vertice = old(r).vertice && r.base = e*old(r).base && r.altura = e*old(r).altura}
+    }
+
+    proc esCuadrado?(in r:Rectangulo): bool{
+        requiere:{True}
+        asegura:{res = True <==> r.base = r.altura}
+    }
+}
+
+
+2.
+TAD Esfera
+TAD punto es real x real x real
+Observadores{
+    obs radio: nat 
+    obs coordenadas: punto
+}
+
+Operaciones{
+    proc rotar(inout e:Esfera){
+        requiere:{True}
+        asegura:{e = old(e)}
+    }
+
+    proc trasladar(inout e:Esfera, in p: punto){
+        requiere:{True}
+        asegura:{e.coordenadas = p}
+        asegura:{e.radio = old(e).radio}
+    }
+
+    proc escalar(inout e:Esfera, in n:real){
+        requiere:{True}
+        asegura:{e.coordenadas = old(e).coordenadas}
+        asegura:{e.radio = old(e).radio * n}
+    }
+
+    proc obtenerProyecciónXY(in e:Esfera): real x real{
+        requiere{True}
+        asegura{res_0 = e.coordenadas_0 && res_1 = e.coordenadas_1} #ta bien?
+    }
+}
