@@ -71,3 +71,39 @@ TAD CacheFIFO{
         }
     }
 }
+
+c)
+TAD CacheLRU{
+    Observadores{
+        memoria: Conj<Elemento x Espacio x Tiempo>
+        espacio: float
+    }
+
+    proc crearCache():CacheLRU{
+            requiere:{}
+            asegura:{CacheLRU.memoria = {}}
+        }
+
+    proc liberarEspacio(inout c: CacheLRU){
+            requiere:{sinEspacio(c)}
+            asegura:{c.memoria.length = old(c).memoria.length - 1}
+            asegura:{exists i:int :: 0<=i<|old(c).memoria| &&L esEliminado(old.(c).memoria[i], old(c)) &&
+                                     !(old(c).memoria[i] in c.memoria)}
+            asegura:{forall i:int :: 0<=i<|old(c).memoria| && !Eliminado(old(c).memoria[i], old(c)) ==>L 
+                                     old(c).memoria[i] in c.memoria}                                     
+        }
+
+    proc agregarElemento(inout c: CacheLRU, in e: Elemento x Espacio X Tiempo){
+            requiere:{!(sinEspacio(c + {e_0,e_1,0}))}
+            asegura:{|c.memoria| = |old(c).memoria|+1}
+            asegura:{e_2 = 0} #timer en 0
+            asegura:{c.memoria = old(c).memoria + {e}}
+            asegura:{forall i:int :: 0<=i<|old(c).memoria| ==>L old(c).memoria[i] in c.memoria}
+        }
+
+    proc accederAElemento(in c: CacheLRU, inout e: Elemento x Espacio x Tiempo){
+        requiere:{e in c.memoria}
+        asegura:{e_0 = old(e)_0 && e_1 = old(e)_1}
+        asegura:{e_2 = 0}
+    }    
+}
