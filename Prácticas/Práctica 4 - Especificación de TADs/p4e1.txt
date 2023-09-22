@@ -63,3 +63,5 @@ Operaciones{
         asegura{res_0 = e.coordenadas_0 && res_1 = e.coordenadas_1} #ta bien?
     }
 }
+
+

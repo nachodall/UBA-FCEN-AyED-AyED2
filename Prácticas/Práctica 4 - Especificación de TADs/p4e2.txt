@@ -1,0 +1,73 @@
+1)
+TAD Multiconjunto<T>{
+    TAD dato es T
+    TAD cant es int 
+
+    Observadores{
+        obs multiconjunto: dict<dato, cant>
+    }
+
+    Operaciones{
+        proc crear():Multiconjunto<T>{
+            requiere:{True}
+            asegura:{res.multiconjunto = {}}
+        }
+
+        proc getCantDeUnElem(m:Multiconjunto<T>, e:dato):cant{
+            requiere:{True}
+            asegura:{If e in m.multiconjunto Then res = m.multiconjunto[e] Else 0 Fi}
+        }
+
+        proc agregarUnElem(inout m:Multiconjunto, e:dato){
+            requiere:{True}
+            asegura:{If e in old(m).multiconjunto Then
+                        m.multiconjunto[e] = old(m).multiconjunto[e] + 1 && 
+                        |m.multiconjunto| = |old(m).multiconjunto| 
+                    Else
+                        m.multiconjunto[e] = 1 && |m.multiconjunto| = |old(m).multiconjunto|+1 Fi}
+        }
+
+        proc quitarUnElem(inout m:Multiconjunto, e:dato){
+            requiere:{e in m.multiconjunto}
+            asegura{If old(m).multiconjunto[e] > 1 Then
+                        m.multiconjunto[e] = old(m).multiconjunto[e] - 1
+                    Else
+                        m.multiconjunto = old(m).multiconjunto - {e} FI}#vale el -{e}?
+        }
+    }
+}
+
+2.
+TAD MultiDict<K,V>{
+    TAD Claves es Conj<V>
+    TAD Dato es K
+
+    Observadores{
+        obs multiDict: dict<Dato, Claves>
+    }
+
+    Operaciones{
+        proc crear():MultiDict<K,V>{
+            requiere:{True}
+            asegura:{res.multiDict = {}}
+        }
+
+        proc getKeys(m:MultiDict<K,V>, e:Dato): Claves{
+            requiere:{True}
+            asegura:{If e in m.multiDict Then res = m.multiDict[e] Else {} Fi}
+        }
+
+        proc agregarUnDato(inout m:MultiDict, e:Dato, clave:V){
+            requiere:{True}
+            asegura:{If e in m.multiDict Then
+                        m.multiDict[e] ++ {clave} && |m.multiDict| = |old(m).multiDict|
+                    Else 
+                        m.multiDict[e] = {clave} && |m.multiDict| = |old(m).multiDict| + 1 Fi}
+        }
+
+        proc agregarUnaKey(inout m:multiconjunto, in e:dato, in: c:V){
+            requiere:{e in m.multiDict}
+            asegura:{|m.multiDict| = |old(m).multiDict|}
+            asegura:{m.multiDict[e] = old(m).multiDict[e] ++ {c}}
+        }
+}
