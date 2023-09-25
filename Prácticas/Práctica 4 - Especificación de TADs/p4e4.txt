@@ -1,0 +1,88 @@
+TAD Pila<T>{
+    Observadores{
+        obs lista: dict<int,T>
+    }
+
+    Operaciones{
+        proc create():Pila{
+            asegura:{res.lista = []}
+        }
+
+        proc pop(inout p:Pila){
+            requiere:{|p.lista|>0}
+            asegura:{|p.lista| = |old(p).lista| - 1}
+            asegura:{old(p).lista[0] not in p.lista}
+            asegura:{forall i:int :: 0<i<|old(p).lista| =>L old(p).lista[i] in p.lista}
+        }
+
+        proc push(inout p:Pila, in e:T){
+            asegura:{|p.lista| = |old(p).lista| + 1}
+            asegura:{p.lista[|p.lista|-1] = elem}
+            asegura:{forall i:int :: 0<=i<|old(p).lista| =>L old(p).lista[i] in p.lista}
+        }
+
+        proc empty(p:Pila):Bool{
+            asegura:{res = True <==> |p.lista|=0}
+        }
+
+        proc peak(p:Pila):T{
+            requiere:{|p.lista|>0}
+            asegura:{res = p.lista[0]}
+        }
+    }
+}
+
+TAD Diccionario<K,V>{
+    Observadores{
+        obs dict: Conj<KxV>
+    }
+    Operaciones{
+        proc crear():Diccionario{
+            asegura:{res.dict = {}}
+        }
+
+        proc tamaño(d: Diccionario):int{
+            asegura:{res = |d.dict|}
+        }
+
+        proc pertenece(d: Diccionario, e:V):Bool{
+            asegura:{res = True <==> exist i:K :: d.dict[i]=e}
+        }
+
+        proc valor(d: Diccionario, k:K):V{
+            requiere:{k in d.dict}
+            asegura:{res = d.dict[k]}
+        }
+
+    }
+}
+
+TAD Punto{
+    Observadores{
+        obs r: real;
+        obs theeta: real;
+    }
+
+    Operaciones{
+        proc getRadio(p:Punto):real{
+            asegura:{res = p.r}
+        }
+        
+        proc getAngulo(p:Punto):real{
+            asegura:{res = p.theeta}
+        }
+
+        proc escalarLongitud(inout p:Punto, n:real){
+            asegura:{p.r = old(p).r * n}
+        }
+
+        proc rotar90Grados(inout p:Punto, a:real){
+            asegura:{p.theeta = old(p).theeta + pi/2}
+        }
+
+        proc getCoordenadasCartesianas(p:Punto):real X real{
+            asegura:{res_0 = p.r * cos(p.theeta)}
+            asegura:{res_1 = p.r * sen(p.theeta)}
+        }
+    }
+}
