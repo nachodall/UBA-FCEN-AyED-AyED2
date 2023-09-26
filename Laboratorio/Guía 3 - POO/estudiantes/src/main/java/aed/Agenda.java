@@ -4,26 +4,36 @@ import java.util.Vector;
 
 public class Agenda {
     private Fecha fecha;
-    private Recordatorio[] recordatorios = new Recordatorio[365];
+    private Vector<Recordatorio> recordatorios = new Vector<Recordatorio>(1);
+    private String texto;
 
     public Agenda(Fecha fechaActual) {
         this.fecha = fechaActual;
+        this.texto = this.fecha.toString() + "\n=====" +"\n";
     }
 
     public void agregarRecordatorio(Recordatorio recordatorio) {
-        throw new UnsupportedOperationException("No implementada aun");
-
+        recordatorios.add(recordatorio);   
     }
 
     @Override
     public String toString() {
-        throw new UnsupportedOperationException("No implementada aun");
-
+        StringBuffer nue = new StringBuffer();
+        nue.append(texto);
+        int i = 0;
+        while(i<recordatorios.size()){
+            if(recordatorios.elementAt(i).fecha().dia() == fecha.dia() && recordatorios.elementAt(i).fecha().mes() == fecha.mes()){
+                nue.append(recordatorios.elementAt(i).toString());
+                nue.append("\n");
+            }
+            i++;
+        }
+        return nue.toString();
     }
 
     public void incrementarDia() {
-        throw new UnsupportedOperationException("No implementada aun");
-
+        fecha.incrementarDia();
+        texto = fecha.toString() + "\n=====" +"\n";
     }
 
     public Fecha fechaActual() {
