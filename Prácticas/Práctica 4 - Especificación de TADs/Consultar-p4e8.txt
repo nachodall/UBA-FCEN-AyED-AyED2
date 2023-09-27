@@ -1,0 +1,35 @@
+TAD Pos es int;
+TAD ValorDado es int;
+
+TAD Tablero{
+    obs casillas: Seq<Z>
+
+    proc efectoCasilla(t:tablero, pos:Pos):Z{
+        requiere:{0 <= pos < |t.casillas|}
+        asegura:{res = t.casillas[pos]}
+    }
+}
+
+TAD JuegoDeLaOca{
+    obs tablero: Tablero
+    obs datos: Dict<jugador:Z, jugada:Seq<Pos x ValorDado> 
+    obs ultimoJugador: Z
+
+    proc iniciarJuego(t:tablero):JuegoDeLaOca{
+        asegura: {res.tablero = t}
+        asegura: {res.datos = {1: [<0,0>], 2: [<0,0>]} } //inicializo dict
+        asegura: {res.ultimoJugador = 2}
+    }
+
+    proc tirarDado(inout o:JuegoDeLaOca, in j:Z, in d:Z){
+        requiere:{1<=d<=6 && 1<=j<=2 && j != o.ultimoJugador}
+        asegura:{o.datos[j] = old(o).datos[j] ++ [<old(o).datos[j][|old(o).datos[j]|-1][0] + old(o).tablero.efectoCasilla(old(o).tablero, dado) , dado>] }
+        asegura:{o.ultimoJugador = j}
+        asegura:{o.datos[j+1 mod 2] = old(o).datos[j+1 mod 2]} //con el mod 2 puedo moverme entre el jugador siguiente y el actual
+    }
+
+    proc pisóBaldosa?(o:JuegoDeLaOca, j:Z, b:Z){
+        res = True <==> exists i:Z :: 0<=i<|o.tablero.casillas| &&L o.datos[j][i][0] = b
+    }
+}
+

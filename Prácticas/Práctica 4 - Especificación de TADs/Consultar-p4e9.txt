@@ -1,0 +1,53 @@
+TAD Cliente es struct<DNI: int, tipo: String>, tipo in {"bien","prole"}
+
+TAD Cola<Cliente> {
+    obs s: Seq<Cliente>
+
+    proc vacia(in c: Cola<Cliente>): bool
+        asegura res == true <==> c.s == []
+
+    proc encolar(inout c: Cola<Cliente>, in e: Cliente)
+        asegura c.s == old(c).s + [e]
+
+    proc desencolar(inout c: Cola<Cliente>)
+        requiere c.s != {}
+        asegura c.s == old(c).s[1..|old(c).s|]
+
+}
+
+TAD Banco{
+    obs cajaA: Cola
+    obs cajaB: Cola
+
+    proc abrirBanco():Banco
+        asegura res.cajaA[1].vacia() && res.cajaB[1].vacia() 
+    
+    proc atenderCajaA(inout b:Banco)
+        requiere noProlesEnCajaA(b.cajaA)
+        asegura b.cajaA = old(b).cajaA.desencolar(cajaA) && b.cajaB = old(b).cajaB
+
+    pred noProlesEnCajaA(c:Cola)
+        forall i:int :: 0<=i<|c.s| =>L c.s[i].tipo = "bien"
+
+    proc atenderCajaB(inout b:Banco)
+        requiere noProlesEnCajaA(b.cajaA)
+        asegura if b.cajaA.vacia() then 
+                    b.cajaB = old(b).cajaB.desencolar(cajaB) &&
+                    b.cajaA = old(b).cajaA
+                else 
+                    b.cajaA = old(b).cajaA.desencolar(cajaA) &&
+                    b.cajaB = old(b).cajaB
+                fi
+
+    proc nuevoCliente(inout b:Banco, in cl:Cliente)
+        requiere noProlesEnCajaA
+        asegura if cl.tipo = "bien" then
+                    b.cajaA = old(b).cajaA.encolar(c1) && b.cajaB = old(b).cajaB
+                else 
+                    b.cajaB = old(b).cajaB.encolar(cl) && b.cajaA = old(b).cajaA
+                fi
+    
+    proc seVaAntesDeTiempo(inout b:Banco, in cl:cliente)
+        requiere cl in b.colaA || cl in b.colaB
+        asegura cl not in b.colaA && cl not in b.colaB
+}
