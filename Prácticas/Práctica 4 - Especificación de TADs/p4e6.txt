@@ -1,0 +1,30 @@
+Famoso es string
+
+TAD Insoportables {
+    obs famosos: conj<Famoso>
+    obs enemigos: dict<Famoso, conj<Famoso>>
+
+    proc peleados(in p: Insoportables, in f1: Famoso, in f2: Famoso): bool{
+        requiere:{f1 in p.famosos && f2 in p.famosos}
+        asegura:{res = True <==> f2 in p.enemigos[f1] || f1 in p.enemigos[f2]}
+    }
+    proc nuevoFamoso(inout p: Insoportables, in f: Famoso){
+        requiere:{f not in p.famosos}
+        asegura:{|p.famosos| = |old(p).famosos| + 1}
+        asegura:{|p.enemigos| = |old(p).enemigos| + 1}
+        asegura:{f in p.famosos}
+        asegura:{f in p.enemigos && p.enemigos[f] = {}} //hace falta q todo el resto sigue igual? como?
+    }
+    proc pelear(inout p: Insoportables, in f1: Famoso, in f2: Famoso){
+        requiere:{f1 in p.famosos && f2 in p.famosos}
+        asegura:{p.enemigos[f1] = old(p).enemigos[f1] U f2 && p.enemigos[f2] = old(p).enemigos[f2] U f1} //aclarar longitudes nuevas?
+    }
+    proc reconciliar(input p: Insoportables, in f1: Famoso, in f2: Famoso){
+        requiere:{f1 in p.famosos && f2 in p.famosos}
+        asegura:{p.enemigos[f1] = old(p).enemigos[f1] - f2 && p.enemigos[f2] = old(p).enemigos[f2] - f1}
+    }
+    proc masPeleadorHistorico(in p: Insoportables): conj<Famoso>{
+        res = p.enemigos[h] <==> not exists f:Famoso ::
+        f != h &&f in p.enemigos && |p.enemigos[f]| >= |p.enemigos[h]|
+    }
+}

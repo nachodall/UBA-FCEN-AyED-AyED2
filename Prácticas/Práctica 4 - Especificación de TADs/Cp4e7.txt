@@ -1,0 +1,45 @@
+TAD Datos es struct<actual: nat, minimo: nat, comprados: nat, vendidos: nat, sustituto: Producto>
+TAD Producto es struct<nombre: String, datos:Datos> 
+TAD Stock{
+    obs stock: Dict<nombre: String, producto:Producto> //es redundante el nombre pero necesito indexar de alguna forma los productos. y no puedo poner un Conj<Productos> xq no tendria idea de que indice tiene c/producto
+
+    proc registrarNuevoProducto(inout s:Stock, p:Producto){
+        requiere:{p.nombre not in s.stock}
+        asegura:{|s.stock| = |old(s).stock| + 1}
+        asegura:{s.stock + {p.nombre: p.datos}} //asi se agregan a un dict????
+        asegura:{s.stock[p.nombre].actual = p.datos.minimo}
+    }
+
+    proc registrarCompra(inout s:Stock, in p:Producto){
+        requiere:{p.nombre in s.stock}
+        asegura:{s.stock[p.nombre].datos.comprados = old(s).stock[p.nombre].datos.comprados + 1}
+        asegura:{s.stock[p.nombre].datos.actual = old(s).stock[p.nombre].datos.actual + 1}
+    }
+
+    proc registrarVenta(inout s:Stock, in p:Producto){
+        requiere:{p.nombre in s.stock && p.producto.actual > 0}
+        asegura:{s.stock[p.nombre].datos.vendidos = old(s).stock[p.nombre].datos.vendidos + 1}
+        asegura:{s.stock[p.nombre].datos.actual = old(s).stock[p.nombre].datos.actual - 1}
+    }
+
+    proc getSustituto(p:Producto):Producto{
+        requiere:{True} // que no haya stock del origi?
+        asegura:{res = p.datos.sustituto}
+    }
+
+    proc porDebajoDelMinimo(s:Stock):Conj<Producto>{
+        requiere:{True}
+        asegura:{forall n:String :: n in s.stock ==>
+                    if stockMinimoSinSust(s.stock[n]) || stockMinimoConSust(stock[n]) Then
+                        res U s.stock[n]
+                    Else
+                        Skip
+                    Fi}
+    }
+    pred stockMinimoSinSust(p:Producto){
+        p.datos.minimo < p.datos.actual && p.datos.sustituto = Null //como hago cuando no tiene susti
+    }
+    pred stockMinimoConSust(p:Producto){
+        p.datos.minimo < p.datos.actual && p.datos.sustituto.datos.minimo < p.datos.sustituo.datos.minimo
+    }
+}
