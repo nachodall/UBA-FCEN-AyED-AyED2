@@ -20,7 +20,7 @@ TAD Banco{
     obs cajaB: Cola
 
     proc abrirBanco():Banco
-        asegura res.cajaA[1].vacia() && res.cajaB[1].vacia() 
+        asegura res.cajaA.vacia() && res.cajaB.vacia() 
     
     proc atenderCajaA(inout b:Banco)
         requiere noProlesEnCajaA(b.cajaA)
