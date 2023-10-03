@@ -1,3 +1,5 @@
+
+// Los hice antes de la actualización de los SetKey, DelKey, etc
 1)
 TAD Multiconjunto<T>{
     TAD dato es T
