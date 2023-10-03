@@ -1,0 +1,55 @@
+TAD Cantidades es struct<actual: int, minimo: nat>
+TAD Producto es String
+TAD Stock{
+    obs stock: Dict<Producto, cant: cantidades>
+    obs sustitutos: Dict<Producto, Seq<Producto>>
+
+    proc crearAlmacen(): Stock
+        asegura: res.stock = {}
+        asegura: res.sustitutos = {}
+
+    proc registrarNuevoProducto(inout s: stock, in p: Producto)
+        asegura: s.stock = setKey(s.stock, p,<p.minimo, p.minimo>) //vale? 
+        asegura: s.sustitutos = setKey(s.sustitutos, p, {}) //vale para agregar una key?
+
+    proc informarSustituto(inout s: stock, in p: Producto, in sus: producto)
+        requiere: p in s.stock && s == old(s)
+        requiere: |s.sustitutos[p]| = 0 //no tiene sustituto        
+        asegura: s.sustitutos = setKey(s.sustitutos, p, sus)
+        asegura: s.stock = old(s).stock 
+
+    proc registrarCompra(inout s: Stock, in p: Producto, in cant: nat)
+        requiere: p in s.stock && s == old(s)
+        asegura: s.stock = setKey(s.stock, p, s.stock[p] + cant)
+        asegura: s.sustitutos = old(s).sustitutos
+
+    proc registrarVenta(inout s: Stock, in p: Producto, in cant: nat)
+        requiere: p in stock && s == old(s)
+        requiere: s.stock[p].minimo <= s.stock[p].actual
+        asegura: If stock[p].minimo <= s.stock[p].actual - cant Then //alcanza con los q tiene p
+                    s.stock = setKey(s.stock, p, s.stock[p].actual - cant)
+                    s.sustitutos = old(s).sustitutos
+                 Else 
+                    If tieneSustituo(s,p) &&L s.stock[p].actual + cantStockDeSustituto(s,s.sustitutos[p][0]) - cant >= s.stock[p].minimo 
+                        && cant - cantAVender(s,p) <= cantAVender(s, s.sustitutos[p][0]) Then //alcanza con el sustituto
+                            s.stock = setKey(s.stock, p, s.stock[p].minimo) && 
+                            s.sustituto = setKey(s.stock, s.sustitutos[p][0], s.stock[s.sustitutos[p][0]] - (cant - cantAVender(s,p)))
+                    Else //no llego ni con el sustituto entonces queda todo igual
+                        s.sustitutos = old(s).sustitutos
+                        s.stock = old(s).stock
+                    Fi 
+                 Fi
+
+    pred tieneSustituo(s: Stock, p: Producto)
+        |s.sustitutos[p]| = 1
+
+    aux cantStockDeSustituto(s: Stock, p: Producto): int
+        res = s.stock[p][0].actual
+
+    aux cantAVender(inout s: Stock, p: Producto): int 
+        res = |s.stock[p].actual - s.stock[p].minimo| //valor absoluto
+
+    proc productosDebajoDelMinimo(s: Stock): Conj<Producto>
+        asegura: forall p:Producto :: p in stock && !tieneSustituo(s,p) ==>L (s.stock[p].actual < s.stock.minimo) && p in res
+        asegura: forall p:Producto :: p in stock && tieneSustituo(s,p) ==>L (s.stock[p].actual + cantStockDeSustituto(s,p) < s.stock.minimo) && p in res
+}
