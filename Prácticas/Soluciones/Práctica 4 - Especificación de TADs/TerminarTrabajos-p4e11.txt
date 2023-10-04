@@ -1,3 +1,4 @@
+
 TAD Trabajo es Bool
 TAD Cola<Trabajo> {
     obs s: Seq<Trabajo>
