@@ -23,14 +23,14 @@ TAD Banco{
         asegura res.cajaA.vacia() && res.cajaB.vacia() 
     
     proc atenderCajaA(inout b:Banco)
-        requiere noProlesEnCajaA(b.cajaA)
+        requiere noProlesEnCajaA(b.cajaA) && cajaA.length > 0
         asegura b.cajaA = old(b).cajaA.desencolar(cajaA) && b.cajaB = old(b).cajaB
 
     pred noProlesEnCajaA(c:Cola)
         forall i:int :: 0<=i<|c.s| =>L c.s[i].tipo = "bien"
 
     proc atenderCajaB(inout b:Banco)
-        requiere noProlesEnCajaA(b.cajaA)
+        requiere noProlesEnCajaA(b.cajaA) && cajaB.length > 0
         asegura if b.cajaA.vacia() then 
                     b.cajaB = old(b).cajaB.desencolar(cajaB) &&
                     b.cajaA = old(b).cajaA
@@ -49,5 +49,5 @@ TAD Banco{
     
     proc seVaAntesDeTiempo(inout b:Banco, in cl:cliente)
         requiere cl in b.colaA || cl in b.colaB
-        asegura cl not in b.colaA && cl not in b.colaB
+        asegura if c1 in old(b) then c1 U// no habia q usar cola lpm
 }
