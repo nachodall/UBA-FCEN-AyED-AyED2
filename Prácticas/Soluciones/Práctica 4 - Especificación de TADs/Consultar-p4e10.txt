@@ -1,3 +1,5 @@
+//rehacer usando sequencias
+
 TAD IrAlBaño{
     obs bañoOcupado: bool
     obs alumnos: Conj<ZxZ>
