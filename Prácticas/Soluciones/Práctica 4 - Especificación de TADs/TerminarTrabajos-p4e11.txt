@@ -1,4 +1,4 @@
-
+#otros observadores, la cola en realidad es pila. y los trabajadores un dict <nombre,ocupado?>
 TAD Trabajo es Bool
 TAD Cola<Trabajo> {
     obs s: Seq<Trabajo>
