@@ -1,3 +1,4 @@
+//no le des bola al minimo.
 TAD Cantidades es struct<actual: int, minimo: nat>
 TAD Producto es String
 TAD Stock{
