@@ -15,6 +15,7 @@ TAD Stock{
 
     proc informarSustituto(inout s: stock, in p: Producto, in sus: producto)
         requiere: p in s.stock && s == old(s)
+        requiere: forall k:Producto :: k in s.sustituto ==>L sus not in s.sustituto[k]
         requiere: |s.sustitutos[p]| = 0 //no tiene sustituto        
         asegura: s.sustitutos = setKey(s.sustitutos, p, sus)
         asegura: s.stock = old(s).stock 
