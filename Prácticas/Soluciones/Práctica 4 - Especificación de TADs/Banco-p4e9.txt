@@ -1,0 +1,59 @@
+TAD Cliente es struct<DNI: int, tipo: String>, tipo in {"bien","prole"}
+
+TAD Cola<Cliente> {
+    obs s: Seq<Cliente>
+
+    proc vacia(in c: Cola<Cliente>): bool
+        asegura res == true <==> c.s == []
+
+    proc encolar(inout c: Cola<Cliente>, in e: Cliente)
+        asegura c.s == old(c).s + [e]
+
+    proc desencolar(inout c: Cola<Cliente>)
+        requiere c.s != {}
+        asegura c.s == old(c).s[1..|old(c).s|]
+
+    proc quitarManteniendoOrden(inout c: Cola<Cliente>, in e: Cliente) //puedo mofificar este tad?
+        require: e in c.s 
+        asegura: e not in c.s
+        asegura: exists j: int :: (o<=j<|c.s| && c.s[j] = e && (forall i: int :: 0<=i<j ==>L 
+                 c.s[i] = old(c).s[i]) && (forall k: int :: j<=k<|c.s|-1 ==>L c.s[k] = old(c).s[k+1])) //los q estaban antes del eliminado siguen en el mismo orden, los que estaban dsp del eliminado se "adelantan"
+}
+
+TAD Banco{
+    obs cajaA: Cola<Cliente>
+    obs cajaB: Cola<Cliente>
+
+    proc abrirBanco():Banco
+        asegura res.cajaA.vacia() && res.cajaB.vacia() 
+    
+    pred noProlesEnCajaA(c:Cola)
+        forall i:int :: 0<=i<|c.s| =>L c.s[i].tipo = "bien"
+
+    proc atenderCajaB(inout b:Banco)
+        requiere: noProlesEnCajaA(b.cajaA) && cajaB.length > 0
+        asegura: vacia(old(b).cajaA) ==>  //asi accedo??
+                    b.cajaB = desencolar(old(b).cajaB) && //asi accedo a op de los otros tad?
+                    b.cajaA = old(b).cajaA
+        asegura: !vacia(old(b).cajaA) ==>
+                    b.cajaA = desencolar(old(b).cajaA) &&
+                    b.cajaB = old(b).cajaB
+            
+
+    proc atenderCajaA(inout b:Banco)
+        requiere: noProlesEnCajaA(b.cajaA) && cajaA.length > 0
+        asegura: b.cajaA = desencolar(old(b).cajaA) && b.cajaB = old(b).cajaB
+
+    proc nuevoCliente(inout b:Banco, in cl:Cliente)
+        requiere noProlesEnCajaA
+        asegura if cl.tipo = "bien" then
+                    b.cajaA = encolar(old(b).cajaA, cl) && b.cajaB = old(b).cajaB
+                else 
+                    b.cajaB = encolar(old(b).cajab, cl) && b.cajaA = old(b).cajaA
+                fi
+    
+    proc seVaAntesDeTiempo(inout b:Banco, in cl:cliente)
+        requiere (cl.tipo == "bien" && cl in b.colaA) || (cl.tipo == "prole" && cl in b.colaB)
+        asegura cl.tipo == "bien" ==> b.colaA = quitarManteniendoOrden(old(b).colaA, cl) && b.colaB = old(b).colaB
+        asegura cl.tipo == "prole" ==> b.colaB = quitarManteniendoOrden(old(b).colaB, cl) && b.colaA = old(b).colaA 
+}
