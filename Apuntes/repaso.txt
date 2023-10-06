@@ -1,0 +1,14 @@
+// Especificar un problema tq, dada una secuencia de Z, se quiere saber cual es el valor mas grande que se puede
+obtener sumando los elem de una subseq de posiciones consecutivas no vacia.
+[-1,2,-10,9,1,-3] -> 10 por la subsec [9,1]
+
+proc problema(s: seq<Z>): Z
+    requiere: noVacia(s)
+    asegura: exists i,j: int :: 0<=i<j<=|s| &&L esMayorSubseq(s,subseq(s,i,j)) && res == sumaDeSec(subseq(s,i,j))
+
+pred esMayorSubseq(s, s': seq<Z>)
+    forall i,j: int :: 0<=i<j<=|s| && subseq(s,i,j) != s' ==>L sumaDeSec(s') >= sumaDeSec(subsec(i,j))
+
+aux sumaDeSec(s: seq<Z>)
+    sum i: int :: 0<=i<|s| :: s[i] 
+
