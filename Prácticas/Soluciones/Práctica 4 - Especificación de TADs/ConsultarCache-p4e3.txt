@@ -18,7 +18,7 @@ TAD CacheTTL<K,V>{
     proc agregarElemento(inout c: CacheTTL<K,V>, in k: K, in v: V)
         Requiere: !(k in c.memoria)
         Requiere: c == old(c)
-        Asegura: c.memoria = setKey(c.memoria, k, <V, 0>)
+        Asegura: c.memoria = setKey(old(c.memoria), k, <V, 0>)
         Asegura: c.timeOut = old(c).timeOut
 
     proc pasaTiempo(inout c: CacheTTL<K,V>, in t: real)
@@ -38,20 +38,29 @@ TAD CacheFIFO<K,V>{
     obs memoria: Dict<clave: K, datos: struct<value: V, time: real>>
     obs capacidadMax: int
 
-    proc borrarAutomaticamente(inout c: CacheFIFO<K,V>)
-        Requiere: cantClaves(c.memoria) >= c.capacidadMax
-        Requiere: c == old(c)
-        Asegura: c.capacidadMax = old(c).capacidadMax
-        Asegura: exists k: K :: k in old(c).memoria && 
-                 (forall k': K :: k' in old(c)memoria && k!=k' ==> c.memoria[k].time >= c.memoria[k'].time && k' in c.memoria) &&
-                 !(k in c.memoria)
-        Asegura: forall k :: K in c.memoria ==> k in old(c).memoria
-
     proc agregarElemento(inout c: CacheTTL<K,V>, in k: K, in v: V)
         Requiere: !(k in c.memoria)
-        Requiere: c == old(c)
         Asegura: c.capacidadMax = old(c).capacidadMax
-        Asegura: c.memoria = setKey(c.memoria, k, <V, 0>)
+        Asegura: memoriaLlena(old(c)) ==> sinElMasAntiguo(c, old(c)) 
+        Asegura: !memoriaLlena(old(c)) ==> seMantieneMemoria(c, old(c))
+        Asegura: nuevoElementoEnMemoria(c,k,v)
+
+    pred memoriaLlena(c: CacheFIFO)
+        c.capacidadMax == |c.memoria|
+
+    pred sinElMasAntiguo(nue: CacheFIFO, old: CacheFIFO)
+        exists k: K :: k in old.memoria && 
+        (forall k': K :: k' in old.memoria && k!=k' ==> (old.memoria[k].time >= old.memoria[k'].time && k' in nue.memoria)) &&
+        !(k in nue.memoria)
+
+    pred seMantieneMemoria(nue: CacheFIFO, old: CacheFIFO)
+        forall k:K :: k in old.memoria <==> k in nue.memoria
+
+    pred nuevoElementoEnMemoria(c: CacheFIFO, k: K, v: V)
+        k in c.memoria && c.memoria[k].value = v && c.memoria[k].time = 0
+
+    pred memoriaLlena(c: CacheFIFO)
+        c.capacidadMax == |c.memoria|
 
     proc pasaTiempo(inout c: CacheTTL<K,V>, in t: real)
         Requiere: c == old(c)
@@ -59,10 +68,9 @@ TAD CacheFIFO<K,V>{
         Asegura: c.capacidadMax = old(c).capacidadMax
         Asegura: forall k: K :: k in c.memoria <==> k in old(c).memoria
 
-    proc accederAElemento(inout c: CacheTTL<K,V>, in k: K)
+    proc accederAElemento(inout c: CacheTTL<K,V>, in k: K): V
         Requiere: k in c.memoria && c == old(C)
-        Asegura: c.memoria = old(c).memoria
-        Asegura: c.capacidadMax = old(c).capacidadMax
+        Asegura: res = c.memoria[k].value
 }
 
 c)
@@ -70,25 +78,18 @@ TAD CacheLRU<K,V>{
     obs memoria: Dict<clave: K, datos: struct<value: V, time: real>>
     obs capacidadMax: int
 
-    proc borrarAutomaticamente(inout c: CacheFIFO<K,V>)
-        Requiere: cantClaves(c.memoria) >= c.capacidadMax
-        Requiere: c == old(c)
-        Asegura: c.capacidadMax = old(c).capacidadMax
-        Asegura: exists k: K :: k in old(c).memoria && 
-                 (forall k': K :: k' in old(c)memoria && k!=k' ==> c.memoria[k].time >= c.memoria[k'].time && k' in c.memoria) &&
-                 !(k in c.memoria)
-        Asegura: forall k :: K in c.memoria ==> k in old(c).memoria
-
     proc agregarElemento(inout c: CacheTTL<K,V>, in k: K, in v: V)
         Requiere: !(k in c.memoria)
-        Requiere: c == old(c)
         Asegura: c.capacidadMax = old(c).capacidadMax
-        Asegura: c.memoria = setKey(c.memoria, k, <V, 0>)
+        Asegura: memoriaLlena(old(c)) ==> sinElMasAntiguo(c, old(c)) 
+        Asegura: !memoriaLlena(old(c)) ==> seMantieneMemoria(c, old(c))
+        Asegura: nuevoElementoEnMemoria(c,k,v)
 
-    proc accederAElemento(inout c: CacheTTL<K,V>, in k: K)
+    proc accederAElemento(inout c: CacheTTL<K,V>, in k: K): V
         Requiere: k in c.memoria && c == old(C)
         Asegura: c.memoria = setKey(c.memoria, k, <old(c).memoria[k].value, 0>)
         Asegura: c.capacidadMax = old(c).capacidadMax
+        Asegura: res = c.memoria[k]
 
     proc pasaTiempo(inout c: CacheTTL<K,V>, in t: real)
         Requiere: c == old(c)
