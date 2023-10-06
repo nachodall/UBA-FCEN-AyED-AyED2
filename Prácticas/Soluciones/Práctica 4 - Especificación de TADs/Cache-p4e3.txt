@@ -1,4 +1,4 @@
-//agregar y borrar van juntos. ver el old
+
 a) 
 TAD CacheTTL<K,V>{
     obs memoria: Dict<clave: K, datos: struct<value: V, time: real>>

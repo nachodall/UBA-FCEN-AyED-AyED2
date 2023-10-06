@@ -1,46 +1,47 @@
-//no le des bola al minimo.
 TAD Cantidades es struct<actual: int, minimo: nat>
 TAD Producto es String
 TAD Stock{
-    obs stock: Dict<Producto, cant: cantidades>
+    obs stock: Dict<Producto, cantidades>
     obs sustitutos: Dict<Producto, Seq<Producto>>
+    obs ventas: Dict<Producto, int>
+    obs compras: Dict<Producto, int>
 
     proc crearAlmacen(): Stock
         asegura: res.stock = {}
         asegura: res.sustitutos = {}
 
     proc registrarNuevoProducto(inout s: stock, in p: Producto)
-        asegura: s.stock = setKey(s.stock, p,<p.minimo, p.minimo>) //vale? 
-        asegura: s.sustitutos = setKey(s.sustitutos, p, {}) //vale para agregar una key?
+        asegura: s.stock = setKey(old(s).stock, p,<p.minimo, p.minimo>) 
+        asegura: s.sustitutos = setKey(old(s).sustitutos, p, {}) 
+        asegura: s.ventas = old(s).ventas
+        asegura: s.compras = old(s).compras
 
     proc informarSustituto(inout s: stock, in p: Producto, in sus: producto)
-        requiere: p in s.stock && s == old(s)
-        requiere: forall k:Producto :: k in s.sustituto ==>L sus not in s.sustituto[k]
-        requiere: |s.sustitutos[p]| = 0 //no tiene sustituto        
-        asegura: s.sustitutos = setKey(s.sustitutos, p, sus)
+        requiere: p in s.stock 
+        requiere: forall k:Producto :: k in old(s).sustituto ==>L sus not in old(s).sustituto[k]
+        requiere: |old(s).sustitutos[p]| = 0        
+        asegura: s.sustitutos = setKey(old(s).sustitutos, p, sus)
         asegura: s.stock = old(s).stock 
+        asegura: s.ventas = old(s).ventas
+        asegura: s.compras = old(s).compras
 
     proc registrarCompra(inout s: Stock, in p: Producto, in cant: nat)
-        requiere: p in s.stock && s == old(s)
-        asegura: s.stock = setKey(s.stock, p, s.stock[p] + cant)
+        requiere: p in s.stock
+        asegura: s.stock = setKey(old(s).stock, p, s.stock[p] + cant)
         asegura: s.sustitutos = old(s).sustitutos
+        asegura: s.ventas = old(s).ventas
+        asegura: s.compras = setKey(old(s).compras, p, cant)
 
-    proc registrarVenta(inout s: Stock, in p: Producto, in cant: nat)
-        requiere: p in stock && s == old(s)
-        requiere: s.stock[p].minimo <= s.stock[p].actual
-        asegura: If stock[p].minimo <= s.stock[p].actual - cant Then //alcanza con los q tiene p
-                    s.stock = setKey(s.stock, p, s.stock[p].actual - cant)
-                    s.sustitutos = old(s).sustitutos
-                 Else 
-                    If tieneSustituo(s,p) &&L s.stock[p].actual + cantStockDeSustituto(s,s.sustitutos[p][0]) - cant >= s.stock[p].minimo 
-                        && cant - cantAVender(s,p) <= cantAVender(s, s.sustitutos[p][0]) Then //alcanza con el sustituto
-                            s.stock = setKey(s.stock, p, s.stock[p].minimo) && 
-                            s.sustituto = setKey(s.stock, s.sustitutos[p][0], s.stock[s.sustitutos[p][0]] - (cant - cantAVender(s,p)))
-                    Else //no llego ni con el sustituto entonces queda todo igual
-                        s.sustitutos = old(s).sustitutos
-                        s.stock = old(s).stock
-                    Fi 
-                 Fi
+    proc registrarVenta(inout s: Stock, in p: Producto, in cant: nat) //hubiese estado bueno meter mas preds
+        requiere: p in s.stock 
+        asegura: s.compras = old(s).compras 
+        asegura: old(s).stock[p].actual >= cant ==> s.stock[p].actual = old(s).stock[p].actual - cant &&
+                 restoStockIgual(s,old(s),p) && s.ventas = setKey(old(s).ventas, p, cant) //llegue tranki
+        asegura: old(s).stock[p].actual < cant && alcanzaConSus(s, (cant - old(s).stock[p].actual)) ==>
+                 s.stock[p].actual = 0 && s.stock[s.sustituto[p]].actual = old(s).stock[s.sustituto[p]].actual - (cant - old(s).stock[p].actual) &&
+                 restoStockIgual(s,old(s),p) && s.ventas = setKey(old(s).ventas, p, cant) //llego con el sustituto
+        asegura: old(s).stock[p].actual < cant && !alcanzaConSus(s, (cant - old(s).stock[p].actual)) ==>
+                 s.stock = old(s).stock && s.ventas = old(s).ventas //no llego ni con el sustituo entonces no registro venta
 
     pred tieneSustituo(s: Stock, p: Producto)
         |s.sustitutos[p]| = 1
@@ -48,8 +49,8 @@ TAD Stock{
     aux cantStockDeSustituto(s: Stock, p: Producto): int
         res = s.stock[p][0].actual
 
-    aux cantAVender(inout s: Stock, p: Producto): int 
-        res = |s.stock[p].actual - s.stock[p].minimo| //valor absoluto
+    pred restoStockIgual(nue: Stock, old: Stock, p: Persona)
+        forall k: K :: k in old.stock && k != p => k in nue
 
     proc productosDebajoDelMinimo(s: Stock): Conj<Producto>
         asegura: forall p:Producto :: p in stock && !tieneSustituo(s,p) ==>L (s.stock[p].actual < s.stock.minimo) && p in res
