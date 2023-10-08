@@ -11,4 +11,74 @@ pred esMayorSubseq(s, s': seq<Z>)
 
 aux sumaDeSec(s: seq<Z>)
     sum i: int :: 0<=i<|s| :: s[i] 
+----
+1er Parcial 7/10
+//Se desea especificar primosEnCero que dada una secuencia s devuelve la secuencia pero 
+con los valores que se encuentran en posiciones correspondientes a un numero primo reemplazados por 0.
 
+proc primosEnCero(s: Seq<Z>): Seq<Z>
+    Requiere: True
+    Asegura: |s| = |res|
+    Asegura: forall i: int :: 0<=i<|s| && esPrimo(i) ==>L res[i] = 0
+    Asegura: forall j: int :: 0<=j<|s| && !esPrimo(j) ==>L res[j] = s[j]
+
+pred esPrimo(n: Z)
+   n > 1 && forall m: int :: 1 < m < n ==> n mod m != 0
+
+// TADS
+Queremos modelar el funcionamiento de un vivero. El vivero arranca su actividad sin ninguna planta y con un monto inicial de dinero. 
+Las plantas las compramos en un mayorista que nos vende la cantidad que deseemos pero solamente de a una especie por vez. 
+Como vivimos en un país con inflación, cada vez que vamos a comprar tenemos un precio diferente para la misma planta. 
+Para poder comprar plantas tenemos que tener suficiente dinero disponible, ya que el mayorista no acepta fiarnos.
+A cada planta le ponemos un precio de venta por unidad. Ese precio tenemos que poder cambiarlo todas las veces que necesitemos. 
+Para simplificar el problema, asumimos que las plantas las vendemos de a un ejemplar (cada venta involucra un solo ejemplar de una única especie). 
+Por supuesto que para poder hacer una venta tenemos que tener stock de esa planta y tenemos que haberle fijado un precio previamente. 
+Además, se quiere saber en todo momento cuál es el balance de caja, es decir, el dinero que tiene disponible el vivero.
+1. [10 pts] Indique las operaciones (procs) del TAD con todos sus parámetros.
+2. [15 pts] Describa el TAD en forma completa, indicando sus observadores, los requiere y asegura de las operaciones. Puede agregar los predicados y funciones auxiliares que necesite, con su correspondiente definición
+3. [5 pts] ¿Qué cambiaría si supiéramos a priori que cada vez que compramos en el mayorista pagamos exactamente el 10% más que la vez anterior? Describa los cambios en palabras.
+
+1)
+    proc arrancarActividad(monto: real): Vivero
+    proc comprarPlantaEnMayorista(v: Vivero, p: Planta, cant: int)
+    proc setearPrecioDePlanta(v: Vivero, p: Planta, precio: Real)
+    proc venderPlantaACliente(v: Vivero, p: Planta)
+    proc obtenerBalance(v: Vivero): real 
+
+2)
+    Planta es String 
+    TAD Vivero{
+        obs stock: dict<Planta, int>
+        obs precios: dict <Planta, real>
+        obs balance: real 
+
+        proc arrancarActividad(monto: real): Vivero
+            Asegura: res.balance = monto 
+            Asegura: res.stock = {}
+            Asegura: res.precios = {}
+
+        proc comprarPlantaEnMayorista(v: Vivero, p: Planta, cant: int, precioVenta: real)
+            Requiere: s.balance >= precioVenta * cant 
+            Asegura: v.stock = setKey(old(v).stock, p, old(v).stock + cant)
+            Asegura: v.precios = old(v).precios 
+            Asegura: v.balance = old(v).balance - precioVenta * cant 
+
+        proc setearPrecioDePlanta(v: Vivero, p: Planta, precio: Real)
+            Requiere: p in v.stock 
+            Asegura: v.precios = setKey(old(v).precios, p, precio)
+            Asegura: v.stock = old(v).stock 
+            Asegura: v.balance = old(v).balance
+    
+        proc venderPlantaACliente(v: Vivero, p: Planta)
+            Requiere: v.stock[p] >= 1 
+            Requiere: p in v.precios
+            Asegura: v.stock = setKey(old(v).stock, p, old(v).stock - 1)
+            Asegura: v.precios = old(v).precios 
+            Asegura: v.balance = old(v).balance = old(v).balance + old(v).precios[p]
+
+        proc obtenerBalance(v: Vivero): real 
+            Asegura: res = v.balance 
+    }
+
+3) cambiaria en que podriamos setear el precio un 10% mas cada vez que compramos una planta que ya teniamos 
+    en stock.
