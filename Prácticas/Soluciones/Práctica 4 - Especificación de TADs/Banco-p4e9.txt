@@ -1,59 +1,49 @@
-TAD Cliente es struct<DNI: int, tipo: String>, tipo in {"bien","prole"}
-
-TAD Cola<Cliente> {
-    obs s: Seq<Cliente>
-
-    proc vacia(in c: Cola<Cliente>): bool
-        asegura res == true <==> c.s == []
-
-    proc encolar(inout c: Cola<Cliente>, in e: Cliente)
-        asegura c.s == old(c).s + [e]
-
-    proc desencolar(inout c: Cola<Cliente>)
-        requiere c.s != {}
-        asegura c.s == old(c).s[1..|old(c).s|]
-
-    proc quitarManteniendoOrden(inout c: Cola<Cliente>, in e: Cliente) //puedo mofificar este tad?
-        require: e in c.s 
-        asegura: e not in c.s
-        asegura: exists j: int :: (o<=j<|c.s| && c.s[j] = e && (forall i: int :: 0<=i<j ==>L 
-                 c.s[i] = old(c).s[i]) && (forall k: int :: j<=k<|c.s|-1 ==>L c.s[k] = old(c).s[k+1])) //los q estaban antes del eliminado siguen en el mismo orden, los que estaban dsp del eliminado se "adelantan"
-}
+Cliente es int
+Data es TipoCliente x OrdenEnLaFila // String x Int 
 
 TAD Banco{
-    obs cajaA: Cola<Cliente>
-    obs cajaB: Cola<Cliente>
+    obs cajaA: Dict <Cliente, Data>
+    obs cajaB: Dict <Cliente, Data>
 
     proc abrirBanco():Banco
-        asegura res.cajaA.vacia() && res.cajaB.vacia() 
+        asegura res.cajaA = {}
+        asegura res.cajaB = {} 
     
-    pred noProlesEnCajaA(c:Cola)
-        forall i:int :: 0<=i<|c.s| =>L c.s[i].tipo = "bien"
+    pred noProlesEnCajaA(c:Dict<Cliente,Tipo>)
+        forall k:Cliente :: k in cajaA =>L c[k] = "bien"
 
     proc atenderCajaB(inout b:Banco)
         requiere: noProlesEnCajaA(b.cajaA) && cajaB.length > 0
-        asegura: vacia(old(b).cajaA) ==>  //asi accedo??
-                    b.cajaB = desencolar(old(b).cajaB) && //asi accedo a op de los otros tad?
-                    b.cajaA = old(b).cajaA
+        asegura: |b.cajaA| = 0 ==>
+                    b.cajaA = old(b).cajaA &&
+                    exists c: Cliente :: (c in old(b).cajaB && esPrimeroDeLaFila(c,old(b).cajaB) && c not in b.cajaB &&
+                    forall c': Cliente :: c' in old(b).cajaB && c != c' ==>L c' in b.cajaB && b.cajaB[c'].OrdenEnLaFila = old(b).cajaB[c'].OrdenEnLaFila + 1)
         asegura: !vacia(old(b).cajaA) ==>
-                    b.cajaA = desencolar(old(b).cajaA) &&
-                    b.cajaB = old(b).cajaB
-            
+                    b.cajaB = old(b).cajaB && 
+                    exists c: Cliente :: (c in old(b).cajaA && esPrimeroDeLaFila(c,old(b).cajaA) && c not in b.cajaA &&
+                 forall c': Cliente :: c' in old(b).cajaA && c != c' ==>L c' in b.cajaA && b.cajaA[c'].OrdenEnLaFila = old(b).cajaA[c'].OrdenEnLaFila + 1)
+
+    pred esPrimeroDeLaFila(atendido: Cliente, d: Dict<Cliente, Data>)
+        !exists c:Cliente :: c in fila && c != atendido && d[c].OrdenEnLaFila = 0 && d[atendido].OrdenEnLaFila = 0
 
     proc atenderCajaA(inout b:Banco)
         requiere: noProlesEnCajaA(b.cajaA) && cajaA.length > 0
-        asegura: b.cajaA = desencolar(old(b).cajaA) && b.cajaB = old(b).cajaB
+        asegura: b.cajaB = old(b).cajaB 
+        asegura: exists c: Cliente :: (c in old(b).cajaA && esPrimeroDeLaFila(c,old(b).cajaA) && c not in b.cajaA &&
+                 forall c': Cliente :: c' in old(b).cajaA && c != c' ==>L c' in b.cajaA && b.cajaA[c'].OrdenEnLaFila = old(b).cajaA[c'].OrdenEnLaFila + 1)
 
     proc nuevoCliente(inout b:Banco, in cl:Cliente)
-        requiere noProlesEnCajaA
-        asegura if cl.tipo = "bien" then
-                    b.cajaA = encolar(old(b).cajaA, cl) && b.cajaB = old(b).cajaB
-                else 
-                    b.cajaB = encolar(old(b).cajab, cl) && b.cajaA = old(b).cajaA
-                fi
+        requiere: noProlesEnCajaA && cl !in b.cajaA && CL !in b.cajaB
+        asegura: cl.tipo = "bien" ==> cl in b.cajaA && b.cajaA[cl].TipoCliente = "bien" && estaUltimoEnLaFila(cl,b.cajaA) &&
+                 forall k: Cliente :: k in old(b).cajaA ==> b.cajaA[k] = old(b).cajaA[k]
     
+    pred estaUltimoEnLaFila(cl: Cliente c: Dict<Cliente, Data>)
+        forall k: Cliente :: k in c && k!=cl ==>L c[k].OrdenEnLaFila < c[cl].OrdenEnLaFila
+
     proc seVaAntesDeTiempo(inout b:Banco, in cl:cliente)
-        requiere (cl.tipo == "bien" && cl in b.colaA) || (cl.tipo == "prole" && cl in b.colaB)
-        asegura cl.tipo == "bien" ==> b.colaA = quitarManteniendoOrden(old(b).colaA, cl) && b.colaB = old(b).colaB
-        asegura cl.tipo == "prole" ==> b.colaB = quitarManteniendoOrden(old(b).colaB, cl) && b.colaA = old(b).colaA 
+        requiere: cl in b.cajaA || cl in b.cajaB
+        asegura: cl in old(b).cajaA ==> cl !in b.cajaA && (forall k: Cliente :: k!=cl && estaDetrasDe(k,cl,b) ==>L b.cajaA[k].OrdenEnLaFila = old(b).cajaA[k].OrdenEnLaFila + 1)
+                 && (forall k: Cliente :: k!=cl && !estaDetrasDe(k,cl,b) ==>L b.cajaA[k] = old(b).cajaA[k])
+        asegura: cl in old(b).cajaB ==> cl !in b.cajaB && (forall k: Cliente :: k!=cl && estaDetrasDe(k,cl,b) ==>L b.cajaB[k].OrdenEnLaFila = old(b).cajaB[k].OrdenEnLaFila + 1)
+                 && (forall k: Cliente :: k!=cl && !estaDetrasDe(k,cl,b) ==>L b.cajaB[k] = old(b).cajaB[k])
 }

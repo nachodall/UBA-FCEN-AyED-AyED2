@@ -10,7 +10,7 @@ TAD Stock{
         asegura: res.stock = {}
         asegura: res.sustitutos = {}
 
-    proc registrarNuevoProducto(inout s: stock, in p: Producto)
+    proc registrarNuevoProducto(inout s: stock, in p: Producto, minimo)
         asegura: s.stock = setKey(old(s).stock, p,<p.minimo, p.minimo>) 
         asegura: s.sustitutos = setKey(old(s).sustitutos, p, {}) 
         asegura: s.ventas = old(s).ventas
@@ -34,6 +34,7 @@ TAD Stock{
 
     proc registrarVenta(inout s: Stock, in p: Producto, in cant: nat) //hubiese estado bueno meter mas preds
         requiere: p in s.stock 
+        en el requiere va q tengo q tener stck 
         asegura: s.compras = old(s).compras 
         asegura: old(s).stock[p].actual >= cant ==> s.stock[p].actual = old(s).stock[p].actual - cant &&
                  restoStockIgual(s,old(s),p) && s.ventas = setKey(old(s).ventas, p, cant) //llegue tranki
