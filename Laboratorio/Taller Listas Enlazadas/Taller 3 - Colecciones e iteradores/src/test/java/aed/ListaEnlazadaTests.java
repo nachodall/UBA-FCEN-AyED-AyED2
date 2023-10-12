@@ -317,7 +317,7 @@ class ListaEnlazadaTests {
         assertTrue(it.haySiguiente());
         assertEquals(43, it.siguiente());
         assertTrue(it.hayAnterior());
-        assertEquals(43, it.anterior());
+        assertEquals(43, it.anterior()); //xq no es 42?
         assertTrue(it.hayAnterior());
         assertEquals(42, it.anterior());
         assertFalse(it.hayAnterior());
