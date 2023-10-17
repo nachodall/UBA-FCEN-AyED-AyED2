@@ -145,21 +145,21 @@ public class ListaEnlazada<T> implements Secuencia<T> {
         private ListaEnlazada<T> l;
 
         public ListaIterador(ListaEnlazada<T> lista){
+            apuntador = 0; 
             l = lista;
-            apuntador = -1; //arrancandolo  en 0 no me pasa los tests xq pide q el primer siguiente te mande el primer elem
         }
 
         public boolean haySiguiente() {
-            return apuntador != l.longitud - 1;
+            return apuntador != l.longitud;
         }
         
         public boolean hayAnterior() {
-            return apuntador != -1;
+            return apuntador != 0;
         }
 
-        public T siguiente() {
-            apuntador ++;
-            return l.obtener(apuntador);
+        public T siguiente(){
+            apuntador++;
+            return l.obtener(apuntador-1);
         }
         
 
