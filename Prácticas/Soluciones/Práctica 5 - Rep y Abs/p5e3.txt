@@ -1,0 +1,15 @@
+//lo resolvimos en clase
+
+pred InvRep(in c’: CAImp<T>)
+	0 <= c’.inicio, c’.fin < c’.elems.length &&
+	c’.ini <= c’.fin ==> forall i:int :: (i < c’.inicio || i > c’.fin) && (0 <= i < c’.elems.length) ==> c’.elems[i] = 0 &&
+	c’.ini > c’.fin ==> forall i:int :: (i < c’.inicio && i > c’.fin) && (0 <= i < c’.elems.length) ==> c’.elems[i] = 0
+
+Aux FuncAbs(in c’: CAImp<T>, out c: CA<T>)
+	c: CA<T> / c.cap == c’.elems.length && 
+	|c.s| == if (c’.ini <= c’.fin) then 
+			 c’.fin = c’.ini 
+		     else
+			 c’.elems.length - (c’.ini - c’.fin) &&
+			 forall i: int :: 0<= i < |c.s| ==>L c.s[i] == c’.elems[(c’.init + i) % c’elems.length]
+			fi

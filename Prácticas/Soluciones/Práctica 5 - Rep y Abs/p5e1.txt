@@ -1,0 +1,34 @@
+TAD DiccionarioAcotado<K, V> {
+    obs data: dict<K, V>
+    obs cap: int
+    proc diccionarioVacio(in c: int): Diccionario<K, V>
+        asegura res.cap == c && res.data == {}
+    proc esta(d: Diccionario<K, V>, k: K): bool
+        asegura res == true <==> k in d.data
+    proc definir(inout d: Diccionario<K, V>, in k: K k, in v: V)
+        requiere |d.data| < d.cap
+        asegura d == setKey(old(d), k, v)
+    proc obtener(in d: Diccionario<K, V>, in k: K): V
+        requiere k in d.data
+        asegura res == d.data[k]
+    proc borrar(inout d: Diccionario<K, V>, in k: K)
+        requiere k in d.data
+        asegura d == delKey(old(d), k)
+}
+
+Modulo DictAcotadoImpl<K, V> implenenta DictAcotado<K, V> {
+    var elems: Array<tupla<K,V>>
+    var largo: int
+
+    pred InvRep(d': DictAcotadoImpl<K,V>)
+        0 <= d'.largo <= d'.elems.length && todasLasClavesSonDistintas(d')
+
+    pred todasLasClavesSonDistintas(d': DictAcotadoImpl<K,V>)
+        forall k,j: int :: 0 <= k,j < d'.elems.length && k!=j ==>L  d'.elems[k][0] != d'.elems[j][0]
+
+    aux FuncAbs(d': DictAcotadoImpl<K,V>): DiccionarioAcotado<K, V>
+        d: DiccionarioAcotado | 
+        d'.largo = |d.data| && d'.elems.length = d.cap &&
+        forall t:tupla<K,V> :: t in d'.elems ==>L t[0] in d.data && d.data[t[0]] == t[1] &&
+        forall k:K :: k in d.data ==>L exists i:int :: 0<=i<|d'.elems| && d'.elems[i][k] = d.data[k]
+}

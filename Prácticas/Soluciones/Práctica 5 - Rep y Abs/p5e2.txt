@@ -1,0 +1,36 @@
+TAD ConjuntoAcotado<T> {
+    obs elems: conj<T>
+    obs cap: int
+    proc conjVacio(in c: int): Conjunto<T>
+        asegura res.cap == c && res.elems == {}
+    proc pertenece(in c: Conjunto<T>, in T e): bool
+        asegura res == true <==> e in c.elems
+    proc agregar(input c: Conjunto<T>, in e: T)
+        requiere |c.elems| < c.cap
+        asegura c.elems == old(c).elems + {e}
+    proc sacar(inout c: Conjunto<T>, in e: T)
+        asegura c.elems == old(c).elems - {e}
+    proc unir(inout c: Conjunto<T>, in c’: Conjunto<T>)
+        requiere |c.elems| + |c’.elems| <= c.cap
+        asegura c.elems == old(c).elems + c’.elems
+    proc restar(inout c: Conjunto<T>, in c’: Conjunto<T>)
+        asegura c.elems == old(c).elems - c’.elems
+}
+
+Modulo ConjAcotadoImpl<T> implenenta ConjAcotado<T> {
+    var elems: Array<T>
+    var enUso: Array<bool>
+
+    pred InvRep(c': ConjAcotadoImpl<T>)
+        |c'.enUso| == |c'.elems| && noHayRepetidos(c')
+    
+    pred noHayRepetidos(c': ConjAcotadoImpl<T>)
+        forall i,j:int :: 0<=i,j<|c'.elems| && i!=j ==>L c'.elems[i] != c'.elems[j]
+
+    aux FuncAbs(c': ConjAcotadoImpl<T>): c: ConjAcotado<T>
+        c: ConjAcotado<T> |
+        c.cap = c'.elems.length
+        forall e:T :: e in c.elems ==>L exists i: int :: 0<=i<c'.elems.length && c'.elems[i] = e && c'.enUso[i] = True 
+        forall i:int :: 0<=i<c'.elems && c'.enUso[i] = True ==>L c'.elems[i] in c.elems 
+        forall i:int :: 0<=i<c'.elems && c'.enUso[i] = False ==>L !(c'.elems[i] in c.elems)         
+}
