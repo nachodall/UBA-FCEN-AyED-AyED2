@@ -1,0 +1,30 @@
+TAD Planta {
+    obs alarmas: conj<Alarma>
+    obs sensores: conj<tupla<Sensor, Alarma>>
+    proc nuevaPlanta(): Planta
+        asegura res.alarmas == {}
+        asegura res.sensores == {}
+    proc agregarAlarma(input p: Planta, in a: Alarma)
+        requiere !(a in p.alarmas)
+        asegura p.alarmas == old(p).alarmas + {a}
+        asegura p.sensores == old(p).sensores
+    proc agregarSensor(inout p: Planta, in a: Alarma, in s: Sensor)
+        requiere a in p.alarmas
+        requiere !(<s,a> in p.sensores)
+        asegura p.alarmas == old(p).alarmas
+    asegura p.sensores == old(p.sensores) + {<s,a>}
+}
+
+modulo PlantaImpl implementa Planta {
+    var alarmas: Diccionario<Alarma, Conjunto<Sensor>>
+    var Sensores: Diccionario<Sensor, Conjunto<Alarma>>
+
+    pred InvRep(p': PlantaImpl)
+        forall s:Sensor :: s in p'.sensores ==>L forall a:Alarma :: a in p'.sensores[s] ==>L a in p'.alarmas 
+        forall a:Alarma :: a in p'.alarmas ==>L forall s:Sensor :: s in p'.alarmas[a] ==>L s in p'.sensores    
+
+    aux FuncAbs(p': PlantaImpl): Planta 
+        p: Planta |
+        |p.alarmas| == p'.alarmas.length && forall a:Alarma in p'.alarmas ==>L a in p.alarmas &&
+        forall s:Sensor :: s in p'.sensores ==>L forall a:Alarma :: a in p'.sensores ==>L <s,a> in p.sensores
+}
