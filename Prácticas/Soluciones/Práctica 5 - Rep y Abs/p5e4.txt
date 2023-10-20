@@ -25,6 +25,18 @@ modulo PlantaImpl implementa Planta {
 
     aux FuncAbs(p': PlantaImpl): Planta 
         p: Planta |
-        |p.alarmas| == p'.alarmas.length && forall a:Alarma in p'.alarmas ==>L a in p.alarmas &&
+
+        //todas las alarmas de impl estan en el abs y todas las alarmas que se les asigna un sensor en impl tienen una tupla en abs
+
+        |p.alarmas| == p'.alarmas.length && forall a:Alarma :: a in p'.alarmas ==>L a in p.alarmas &&
         forall s:Sensor :: s in p'.sensores ==>L forall a:Alarma :: a in p'.sensores ==>L <s,a> in p.sensores
-}
+
+        //todos los sensores de impl estan en tuplas del abs 
+
+        forall s:Sensor :: s in p'.sensores ==>L (forall t:tupla<Sensor, Alarma> :: t[0] = s && t[1] in p.alarmas ==>L t in p.sensores)
+
+        //ahora la vuelta, todos los sensores y alarmas del abs estan en impl
+
+        forall a:Alarma :: a in p.alarmas ==>L a in p'.alarmas &&
+        forall t:tupla<Sensor, Alarma>:: t in p.sensores && t[1] in p'.alarmas ==>L t[0] in p'.sensores
+}   
