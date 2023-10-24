@@ -1,0 +1,50 @@
+TAD Planilla {
+    obs actividades: conj<Actividad>
+    obs proyectoDe: dict<Actividad, Proyecto>
+    obs mesDe: dict<Actividad, int>
+    obs horaDe: dict<Actividad, int>
+
+    proc nuevaPlanilla(): Planilla
+    proc totProyxMes(in p: Planilla, in m: Mes, in r: Proyecto): int
+    proc agregar(
+        inout p: Planilla,
+        in a: Actividad,
+        in r: Proyecto,
+        in mes: int,
+        in horas: int
+) }
+Actividad es string
+Proyecto es string
+
+
+modulo PlanillaImpl implementa Planilla {
+    var detalle: Diccionario<
+        Actividad, struct<proy: Proyecto, mes: int, horas: int>
+    >
+    var horasPorMes: Diccionario<proyecto, Array<int>>
+
+    
+    pred InvRep(p': PlanillaImpl){
+        //el array de horas por mes tiene long 12 y horas >= 0
+        forall k:proyecto :: k in p'.horasPorMes ==>L |p'.horasPorMes[k]| = 12 && p'.horasPorMes >= 0
+
+        //todos los proyectos de detalle tienen que estaar en horasPorMes y viceversa
+        forall a:Actividad :: a in p'.detalle ==>L p'.detalle[a].proy in p'.horasPorMes &&
+        forall pr:Proyecto :: pr in p'.horasPorMes ==>L exists a:Actividad :: a in p'.detalle && pr = p'.detalle[a].proy
+
+        //para todo proyecto en horasPorMes tiene las horas q dice en detalle 
+        (forall pr:Proyecto :: pr in p'.horasPorMes) && (forall mes:int :: 0<=mes<=12) ==>L exists a:Actividad :: a in p'.detalle && p'.detalle[a].mes = mes && p'.horasPorMes[pr][mes] = p'.detalle[a].horas
+    }
+
+    aux FuncAbs(p': PlanilaImpl): Planilla{
+        p: Planilla | 
+        p'.detalle.length == |p.actividades| && p'.detalle.length == |p.proyectoDe| && p'.detalle.length == |p.horaDe| && p'.detalle.length == |p.mesDe| &&
+
+        forall a:Activadad :: a in p'.detalle <==>L (a in p.actividades &&
+        p'.detalle[a].proy == p.proyectoDe[a] && p'.detalle[a].mes == p.mesDe[a] && p'.detalle[a].horas == p.horaDe[a]) &&
+
+        forall pr:Proyecto :: pr in p'.horasPorMes ==>L (exists a:Activadad :: a in p.proyectoDe && p.proyectoDe[a] = pr && p'.horasPorMes[pr][p.mesDe[a]] == p.horaDe[a])
+    }
+}
+Actividad es string
+Proyecto es string
