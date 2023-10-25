@@ -1,0 +1,41 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2706
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica-Bold;\f1\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww28600\viewh18000\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\b\fs48 \cf0 AVL\
+\
+
+\f1\b0\fs32 Arboles Velskii-Landis, son balanceados entonces son mas eficientes que los ABBs, que tengan forma de arboles completos, o sea 1 nodo en el primer nivel, 2 en el seg, 4 en el tercero, etc, \'f3sea 2^n - 1, de ac\'e1 se deduce que la b\'fasqueda va en log2(n) ya que es la altura del \'e1rbol.\
+Ya que n = 2^h - 1 ==> h = log2(h)-1\
+NO SIEMPRE VAN A ESTAR 100% COMPLETOS, todas las ramas tienen casi la misma longitud.\
+Cada nodo es la media de sus hijos.\
+\
+BALANCEO PERFECTO:\
+Todos los nodos tienen 2 o 0 hijos. Con esta propiedad las hojas son mas del 50% de los nodos.\
+\
+Puedo podar (cortar todos los nodos de un nivel) el nodo log2(n) veces.\
+\
+BALANCEO EN ALTURA:\
+Un \'e1rbol se dice balanceado en altura si las alturas de los sub\'e1rboles izq y der de c/ nodo difieren en a lo sumo una unidad.\
+\
+FACTOR DE BALANCEO:\
+altura(hd) - altura(hi) = FDB puede dar 1, -1, 0 en AVL.\
+\
+CANTIDAD DE NODOS MINIMA:\
+Para un \'e1rbol de altura h: c(h) = c(h-2) + c(h-1) + 1 = n_min\
+Los arboles que cumplan esto se llaman: arboles de FIBONACCI.\
+\
+AVLi = Fi+2 + 1\
+\
+INSERCI\'d3N\
+1)Insertar cual ABB\
+2)Recalcular factores de balanceo\
+3)Si en la rama hay un factor de balanceo +-2, rebalanceo con rotaciones:\
+	casos posibles:\
+	RR: insertion en el subarbol derecho de un hijo derecho.\
+	LR: insertion en el subarbol izquierdo de un hijo derecho.\
+	RL: insertion en el subarbol derecho de un hijo izquierdo.\
+	LL: insertion en el subarbol izquierdo de un hijo izquierdo.}
