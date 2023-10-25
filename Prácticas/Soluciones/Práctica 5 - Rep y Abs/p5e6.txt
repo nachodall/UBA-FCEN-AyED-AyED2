@@ -1,0 +1,46 @@
+TAD AltaFiesta {
+    obs invitados: conj<Persona>
+    obs pendientes: conj<Persona>
+    obs grupoDe: dict<Persona, Grupo>
+    obs regaloDe: dict<Persona, Regalo>
+
+    proc iniciarFiesta(in personas: Conjunto<Persona>): AltaFiesta
+    proc lleganInvitados(
+        inout a: AltaFiesta,
+        in c: Conjunto<Persona>,
+        in g: Grupo,
+        in r: Regalo
+) }
+
+modulo AltaFiestaImpl implementa AltaFiesta {
+    var invitados: Conjunto<Persona>
+    var presentes: Conjunto<Persona>
+    var grupoDe: Diccionario<Grupo, Conjunto<Persona>>
+    var regaloDeGrupo: Diccionario<Grupo, Regalo>
+
+    pred InvRep(f':AltaFiestaImpl){
+        // solo invitados entran
+        |f'.presentes| <= |f'.invitados| && forall p:Persona :: p in f'.presentes ==>L p in f'.invitados &&
+        // todos los presentes pertenecen a un grupo
+        forall p:Persona :: p in f'.presentes ==>L exists g:Grupo :: g in f'.grupoDe && p in g &&
+        // todos los participantes de un grupo estan presentes e invitados 
+        forall g:grupo :: g in f'.grupoDe ==>L forall p:Persona :: p in g ==>L p in f'.presentes && p in f'.invitados &&
+        // todos los grupos trajeron regalo 
+        forall g:Grupo :: g in f'.grupoDe <==> g in f'.regaloDeGrupo 
+    }
+
+    aux FuncAbs(f':AltaFiestaImpl): AltaFiesta{
+        f: AltaFiesta |
+        (forall p:Persona :: p in f.invitados <==> p in f'.invitados) &&
+        (forall p:Persona :: p in f.pendientes <==> p in f'.invitados && !(p in f'.presentes)) &&
+        f.grupoDe.length == f'.grupoDe.length && 
+        f.regaloDe.length == f'.regaloDeGrupo.length
+        (forall p:Persona :: p in f.grupoDe ==> f.grupoDe[p] in f'.grupoDe && f'.regaloDeGrupo) &&
+        (forall g:Grupo :: g in f'.grupoDe ==> forall p:Persona :: p in g ==> f.grupoDe[p] = g) &&
+        (forall p:Persona :: p in f.regaloDe ==> f.grupoDe[p] in f'.regaloDeGrupo) &&
+        (forall g:Grupo :: g in f'.regaloDeGrupo ==> forall p:Persona :: p in f.grupoDe && f.grupoDe[p] = g ==> f'.regaloDeGrupo[g] = f.regaloDe[p])
+    }
+}
+Persona es string
+Grupo es string
+Regalo es string
