@@ -68,37 +68,31 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
         return maximoRecursivo(aux);
     }
 
+    private void insertarNodo(Nodo z){
+        Nodo x = this.raiz;
+        Nodo y = null;
+        while (x != null){
+            y = x;
+            if (z.dato.compareTo(x.dato) < 0){
+                x = x.hi;
+            } else{
+                x = x.hd;
+            }
+        }
+        z.padre = y;
+        if (y == null){
+            this.raiz = z;
+        } else if(z.dato.compareTo(y.dato) < 0){
+            y.hi = z;
+        } else {
+            y.hd = z;
+        }
+    }
 
     public void insertar(T elem){
         if (!pertenece(elem)){
-            
             Nodo nue = new Nodo(elem);
-            Nodo aux = this.raiz;
-            Nodo auxPadre = null;
-
-            while(aux != null){ //me muevo hasta encontrar una hoja
-                auxPadre = aux;
-                if(aux.dato.compareTo(elem) > 0){
-                    aux = aux.hi;
-                }
-                else{
-                    aux = aux.hd;
-                }
-            }
-
-            nue.padre = auxPadre; //ya encontre donde insertar
-
-            if(auxPadre == null){ // el arbol era vacio
-                this.raiz = nue;
-            }
-
-            else if(auxPadre.dato.compareTo(elem) > 0){ //el arbol no es vacio, me fijo si nue sera hi o hd
-                auxPadre.hi = nue;
-            }
-            else{
-                auxPadre.hd = nue;
-            }
-
+            insertarNodo(nue); 
             this.cardinal++;
         }
     }
@@ -109,7 +103,7 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
             return false;
         }
 
-        if (actual.dato == elem){
+        if (actual.dato.equals(elem)){
             return true;
         }
 
@@ -122,7 +116,8 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
     }
 
     public boolean pertenece(T elem){
-        return busquedaRecursiva(this.raiz, elem);
+        Nodo aux = this.raiz;
+        return busquedaRecursiva(aux, elem);
     }
 
 
@@ -158,7 +153,6 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
     public void eliminar(T elem) { //la explicacion del algoritmo esta en el Cormen
         if (pertenece(elem)){
             Nodo actual = getNodo(elem);
-                
             if (actual.hi == null) {
                 intercambiar(actual, actual.hd);
             } else if (actual.hd == null) {
@@ -201,14 +195,18 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
     }
 
     private class ABB_Iterador implements Iterador<T> {
-        private Nodo _actual;
+        private Nodo actual;
 
-        public boolean haySiguiente() {            
-            throw new UnsupportedOperationException("No implementada aun");
+        public boolean haySiguiente() {        
+            if (actual.hd == null){
+                return false;
+            }    
+            return true;
         }
-    
-        public T siguiente() {
-            throw new UnsupportedOperationException("No implementada aun");
+        
+
+        public T siguiente() { //busca el sucesor
+            return actual.dato;   
         }
     }
 

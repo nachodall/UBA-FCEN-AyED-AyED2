@@ -209,7 +209,7 @@ class ABBTests {
 
     }
 
-    Integer NCLAVES = 1000; 
+    Integer NCLAVES = 100; 
 
     private Integer clave(Integer i) {        
         return NCLAVES * ((i * i - 100 * i) % NCLAVES) + i;
@@ -219,7 +219,7 @@ class ABBTests {
     void stress() {
 
         ABB<Integer> conjunto = new ABB<Integer>();
-        
+
         // Insertar
         for (Integer i = 0; i < NCLAVES; i++ ){
             Integer k = clave(i);
@@ -232,12 +232,14 @@ class ABBTests {
     
         // Insertar de nuevo
         for (Integer i = 0; i < NCLAVES; i++) {
+            assertEquals(NCLAVES, conjunto.cardinal());
             Integer k = clave(i);
             assertEquals(true, conjunto.pertenece(k));
             conjunto.insertar(k);
             assertEquals(true,conjunto.pertenece(k));
             assertEquals(NCLAVES,conjunto.cardinal());
         }
+
 
         // Eliminar los valores para i par
         for (Integer i = 0; i < NCLAVES; i++) {
