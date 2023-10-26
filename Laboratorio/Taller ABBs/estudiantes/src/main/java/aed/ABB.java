@@ -151,8 +151,17 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
     }  
 
     public void eliminar(T elem) { //la explicacion del algoritmo esta en el Cormen
-        if (pertenece(elem)){
-            Nodo actual = getNodo(elem);
+        Nodo actual = this.raiz;
+            while (actual != null && !actual.dato.equals(elem)) {
+                if (elem.compareTo(actual.dato) < 0) {
+                    actual = actual.hi;
+                } else {
+                    actual = actual.hd;
+                }
+            } //aca lo busco
+        
+            if (actual == null) return; // El elemento no se encuentra en el árbol.
+        
             if (actual.hi == null) {
                 intercambiar(actual, actual.hd);
             } else if (actual.hd == null) {
@@ -168,12 +177,10 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
                 sucesor.hi = actual.hi;
                 sucesor.hi.padre = sucesor;
             }
-
             cardinal--;
-        }
     }
+       
     
-
     private String stringInOrder(Nodo actual){
         if (actual == null){
             return "";
@@ -196,17 +203,33 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
 
     private class ABB_Iterador implements Iterador<T> {
         private Nodo actual;
+        private Stack<Nodo> stack; //vamos a ir guardando todos los elementos aca ya que es facil para sacarlos
+        
+        public ABB_Iterador(){
+            actual = raiz;
+            stack = new Stack<Nodo>();
+            Nodo aux = actual;
+            cargarDatosInOrder(aux);
+        }
+
+        private void cargarDatosInOrder(Nodo x){
+            if (x != null){
+                cargarDatosInOrder(x.hd);
+                stack.push(x);
+                cargarDatosInOrder(x.hi);
+            }
+        }
 
         public boolean haySiguiente() {        
-            if (actual.hd == null){
-                return false;
-            }    
-            return true;
+            return !(stack.isEmpty());
         }
-        
 
-        public T siguiente() { //busca el sucesor
-            return actual.dato;   
+        public T siguiente(){ 
+            if (!haySiguiente()){
+                return null;
+            }
+            Nodo siguiente = stack.pop();
+            return siguiente.dato;
         }
     }
 
