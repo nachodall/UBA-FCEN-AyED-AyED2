@@ -1,0 +1,32 @@
+TAD Oficina 
+    obs categorias: conj<Categoria>
+    obs tramitesPend: seq<Id>
+    obs catsPrioritarias: conj<Categoria>
+    obs categoriaDe: dict<Id, Categoria>
+
+
+modulo OficinaImpl implementa Oficina {
+    var catPrioritarias: Conjunto<Categoria>
+    var tramites: Diccionario<Id, Categoria>
+    var tramCat: Diccionario<Categoria, Conjunto<Id>>
+    var pendPrioritarios: Conjunto<Id>
+    var pendientes: Conjunto<Id>
+
+    pred InvRep(o': OficinaImpl)
+        //todos los pendPrioritarios en pendientes
+        forall id:Id :: id in o'.pendPrioritarios ==>L id in o'.pendientes 
+        //todos los pendientes son un tramite de categoria valida
+        forall id:Id :: id in o'.pendPrioritarios ==>L id in tramites 
+        //todos los pendPrioritarios tienen catPrioritarias
+        forall id:Id :: id in o'.pendPrioritarios ==>L o'.tramites[id] in o'.catPrioritarias
+        //todos los id de una categoria son una clave de tramites 
+        forall id:Id :: id in o'.tramites ==> o'.tramites[id] in o'.tramCat && id in o'tramites[id]
+
+    aux funcAbs(o': OficinaImpl): Oficina 
+        o: Oficina |
+        forall c:Categoria :: c in o'.tramCat <==> c im o.categorias &&
+        forall i:Int :: 0<=i<|o.tramitesPend| ==>L o.tramitesPend[i] in o'.pendientes && o'.tramites[i] = o.categoriaDe[o.tramitesPend[i]] &&
+        forall c:Categoria :: c in o.catPrioritarias <==> c in o'.catPrioritarias &&
+        forall c:Categoria :: c in o'.tramCat ==>L forall id:Id :: id in o'.tramCat[id] ==>L o.categoriaDe[id] = c &&
+        forall id:Id :: id in o.categoriaDe ==>L id in  o'.tramCat[o.categoriaDe]
+}
