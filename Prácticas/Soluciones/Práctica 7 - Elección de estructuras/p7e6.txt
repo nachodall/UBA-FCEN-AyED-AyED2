@@ -1,0 +1,64 @@
+Nodo<T> es struct<
+    izq: Nodo,
+    der: Nodo,
+    dato: T >
+
+Impl ArbolBinario<T> {
+    var raiz: Nodo<T>
+
+    proc nivelCompleto(a: ArbolBinario<T>, n: int): bool
+        requiere hayCaminoDeAltura(n)
+
+    proc estaCompleto(in a: ArbolBinario<T>): bool {
+        Complejidad: O(n)
+
+        if(a.raiz == nil){
+            return True;
+        }
+
+        int totalNodos := contarNodos(a);
+
+        boolean resultado := verificarCompleto(arbol, 0, totalNodos);
+
+        return resultado;
+    }
+
+    proc contarNodos(in nodo: ArbolBinario<T>): int {
+        if(nodo == nil){
+            return 0
+        }
+
+        int izquierda := contarNodos(nodo.izq);
+        int derecha := contarNodos(nodo.der);
+
+        return 1 + izquierda + derecha;
+    }
+
+    proc verificarCompleto(nodo: ArbolBinario<T>; i: int; totalNodos: int): boolean {
+        if(nodo == nil){
+            return True;
+        }
+
+        if(indice >= totalNodos){
+            return False;
+        }
+
+        boolean izquierda := verificarCompleto(nodo.izq, 2*i, totalNodos); //es como los indices de los heaps
+        boolean derecha := verificarCompleto(nodo.der, 2*i+1, totalNodos);
+
+        return izquierda && derecha;
+    }
+
+    pred hayCaminoDeAltura(a: ArbolBinario<T>, n): int {
+        exists s: seq<Nodo> :: esCamino(a, s) && |s| == n
+    }
+
+    pred esCamino(a: ArbolBinario<T>, s: seq<Nodo>) {
+        |s| == 0 || (
+            s[0] == raiz &&
+            s[|s|-1].izq == nil &&
+        s[|s|-1].der == nil &&
+        forall i: int :: 0 <= i < |s|-1 ==> s[i].izq == s[i+1] || s[i].der == s[i+1]
+        ) 
+    }
+}

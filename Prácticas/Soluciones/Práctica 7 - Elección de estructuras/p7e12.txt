@@ -1,0 +1,23 @@
+Equipo es int 
+Puntaje es int
+Posicion es int
+
+Modulo Furbo implementa Torneo{
+
+    Furbo se representa con {
+        puntajes: DicLogaritmico<Equipo, Puntaje> // implementado como un AVL
+        posicionPorEquipo: DicLogaritmico<Equipo, Posicion>
+        equiposPorPosicion: DicLogaritmico<Posicion, ConjAVL<Equipo>>
+    }
+
+    registrarPartido(in ganador: Equipo, in perdedor: Equipo, inout t:Furbo){
+        t.puntajes[ganador] += 1; //O(log n) porque lo tengo q buscar en mi AVL
+        var posicion := t.posicionPorEquipo[ganador];
+        var equipos_en_esa_pos := t.equiposPorPosicion[posicion];
+        var posicion_nueva := calcularPosicion(ganador); //ya van a pasar la funcion, pifiaron en el enunciado
+        var equipos_en_pos_nueva := t.equiposPorPosicion[posicion_nueva];
+        t.equipos_en_pos_nueva.Agregar(ganador);
+    }
+
+
+}

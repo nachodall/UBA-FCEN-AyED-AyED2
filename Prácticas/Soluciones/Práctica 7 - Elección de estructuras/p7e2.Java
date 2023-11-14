@@ -3,8 +3,8 @@ public listaEnlazada<int> interseccion(listaEnlazada<int> u, listaEnlazada<int> 
     listaEnlazada<int> nue = new listaEnlazada();
     while (u != null){//O(n)
         if (u.dato <= v.ultimo){ //O(1)
-            if (pertenece(u.dato,v)){ //O(n)
-                agregarEnOrden(u.dato,nue) //O(m)
+            if (ListaEnlazada.pertenece(u.dato,v)){ //O(m)
+                ListaEnlazada.agregarEnOrden(u.dato,nue) //O(r)
             }
         }
         u = u.sig;
@@ -16,14 +16,14 @@ public listaEnlazada<int> interseccion(listaEnlazada<int> u, listaEnlazada<int> 
 public listaEnlazada<int> interseccion(listaEnlazada<int> u, listaEnlazada<int> v){
     listaEnlazada<int> nue = new listaEnlazada();
     while (u != null){//O(n)
-        if (pertenece(u.dato,v)){ //O(n)
+        if (pertenece(u.dato,v)){ //O(m)
             agregar(u.dato,nue); //O(1)
         }
     }
         u = u.sig;
     return nue;
 }
-//Complejidad = O(n^2)
+//Complejidad = O(n*m)
 
 //c) ABBs
 public ABB<int> interseccion(ABB<int> x, ABB<int> y){
@@ -44,7 +44,7 @@ public ABB<int> interseccionRecursivo(ABB<int> x, ABB<int> y, ABB<int> res){
     if (x != null){
         interseccionRecursivo(x.hi, y, res);
         if (pertenece(x.dato,y)){ //O(n)
-            agregar(x.dato,res); //O(m)
+            agregar(x.dato,res); //O(m) 
         }
         interseccionRecursivo(x.hd, y, res);
     }

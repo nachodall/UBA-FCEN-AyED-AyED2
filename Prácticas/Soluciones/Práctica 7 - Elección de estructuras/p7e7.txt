@@ -1,0 +1,91 @@
+//TAD ColaDePrioridad con arreglo en forma de heap.
+
+Modulo ColaDePrioridadHeap<T> implementa ColaDePrioridad<T>{
+    var heap: Array<T>;
+    var size: int;
+
+    proc ColaDePrioridadVacia(int size): ColaDePrioridadHeap<T>{ 
+        Complejidad: O(n)
+
+        res.heap = new Array[1]; //como lo creo vacio????
+        res.size = 0;
+    }
+
+    proc vacia(in c: ColaDePrioridadHeap<T>): boolean{
+        Complejidad: O(1)
+
+        return size == 0;
+    }
+
+    proc getPadre(in pos: int): int{
+        return pos/2;
+    }
+
+    proc intercambiar(in pos: int; in posPadre: int, inout c: ColaDePrioridadHeap<T>){
+        T elem;
+        elem := c.heap[pos];
+        c.heap[pos] := c.heap[posPadre];
+        c.heap[posPadre] := elem;
+    }
+
+    proc apilar(inout c: ColaDePrioridadHeap<T>, in e: T){
+        Complejidad: O(log n)
+
+        if(c.size >= c.heap.length){ //necesito mas lugar
+            Array<T> nue = new Array[c.heap.length * 2];
+            nue.copy(c.heap); //como se copia??
+            c.heap = nue; 
+        }
+
+        c.heap[size] = e;
+        int actual := size;
+        while(actual > 0 && c.heap[actual] > c.heap[getPadre(actual)]){
+            intercambiar(actual, getPadre(actual), c);
+            actual = getPadre(actual);
+        }
+
+        c.size ++;
+    }
+
+    proc getHI(in pos: in): int{
+        return 2*i;
+    }
+
+    proc getHD(in pos: in): int{
+        return 2*i+1;
+    }
+
+    proc heapify(in pos: int, inout c: ColaDePrioridadHeap<T>){
+        int izq = getHI(pos);
+        int der = getHD(pos);
+        int max = pos;
+
+        if (izq < c.size && c.heap[izq] > c.heap[max]) {
+            max = left;
+        }
+
+        if (right < c.size && c.heap[right] > c.heap[max]) {
+            max = right;
+        }
+
+        if (max != pos) {
+            intercambiar(pos, max, c);
+            maxHeapify(max, c);
+        }
+    }
+
+    proc desapilar(inout c: ColaDePrioridadHeap<T>): T{
+        Complejidad: O(log n)
+
+        if(c.size <= 0){
+            return nil;
+        }
+
+        T elem := c.heap[0];
+        c.heap[0] := c.heap[c.size - 1];
+        c.size--;
+        heapify(0);
+        
+        return elem;
+    }
+}
