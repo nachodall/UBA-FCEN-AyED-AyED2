@@ -1,0 +1,55 @@
+(5) Se tiene un arreglo de n numeros naturales que se quiere ordenar por frecuencia, y en caso de 
+igual frecuencia, por su valor. Por ejemplo, a partir del arreglo [1, 3, 1, 7, 2, 7, 1, 7, 3] 
+se quiere obtener [1, 1, 1, 7, 7, 7, 3, 3, 2]. 
+Describa un algoritmo que realice el ordenamiento descrito, utilizando las estructuras de datos 
+intermedias que considere necesarias. Calcule el orden de complejidad temporal del algoritmo 
+propuesto.
+
+(1) Ordeno por valor con algoritmo estable - MergeSort
+[1,1,1,2,3,3,7,7]
+
+(2) Ordeno por cantApariciones con cualquiero algoritmo - MergeSort
+[1,1,1,3,3,7,7,2]
+
+proc mergeSort(int array[], int l, int r) {
+    if (cantApariciones(l) < cantApariciones(r)) //O(n)
+    {
+        int m = l + (r - l) / 2;
+        mergeSort(array,l,m);
+        mergeSort(array,m+1,r);
+
+        merge(array,l,m,r);
+    }
+}
+Complejidad: O(n^2 * log n)
+
+hago un vector de tupla<elem,apariciones>
+while i < a.len
+    vector.append<e,cantAp>
+    i++cantAp
+
+
+1. Dar un algoritmo que ordene un arreglo de n enteros positivos menores que n en tiempo O(n).
+
+counting sort: O(m) con m siendo la cota 
+
+como n cota coincide con O(n) puedo usarlo.
+recorro el arreglo original y a mi array[n] le sumo uno en la pos i cada vez que lo encuentro
+
+
+2. Dar un algoritmo que ordene un arreglo de n enteros positivos menores que n2 en tiempo O(n). Pista:
+Usar varias llamadas al item anterior.
+
+proc ordenarDificil(inout a: Arr[int]){
+    aux := new Array[n];
+    for j=0...n {
+        aux[j]:=cambioDeBase(a[j],n); //cambio los numeros de base10 a baseN (a lo sumo tienen 2 digitos)
+    }
+    //Radix -> O(n)
+    aux:=ejercicioAnterior(unidades, aux);//asumimos que ej1 tiene un parametro que me dicen por que unidad ordeno
+    aux:=ejercicioAnterior(decenas, aux);
+}
+
+
+RadixSort(orden en funcion cantDigitos, me importa la cantDigitos), usa BucketSort
+RadixSort: O(n*d)
