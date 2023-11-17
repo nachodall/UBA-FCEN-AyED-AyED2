@@ -1,0 +1,53 @@
+Modulo SuecoImpl implementa Sueco{
+    var boletos: DiccLog(id_boleto, data); data es struct<tiempo:int, plata:int>
+    var boletosAcumuladosPorTiempo: DiccLog(tiempo, int);
+}
+
+proc agregarBoleto(inout s:SuecoImpl, in id,t,p:int){
+    Complejidad: O(n) 
+
+    //Lo agrego al Dict boletos
+    s.boletos.definir(id, (tiempo,plata)); //O(log n)
+
+    //agrego el acumulado a boletosAcumuladosPorTiempo
+    if(t in s.boletosAcumuladosPorTiempo){ //en ese tiempo ya hubo al menos un boleto
+        s.boletosAcumuladosPorTiempo[t]++; //O(log n)
+    }
+    else{ //no habia nadie ==> defino la clave con lo que habia en tiempo-1 + 1
+        int ultima_cant := getDataDelAntecesor(s,t); //O(log n)
+        s.boletosAcumuladosPorTiempo.definir(t,ultima_cant+1); //O(log n)
+        moverResto(s,t); //O(n)
+    }
+
+}
+
+proc #Intervalo(inout s:SuecoImpl, in inicio,fin:int){
+    Complejidad: O(log n)
+
+    boletos_inicio := s.boletosAcumuladosPorTiempo.obtener(inicio); //O(log n)
+    boletos_fin := s.boletosAcumuladosPorTiempo.obtener(fin); //O(log n)
+
+    return (boletos_fin - boletos_inicio);
+}
+
+proc getDataDelAntecesor(in s:SuecoImpl, in t:int): int{
+    //el antecesor se obtiene haciendo una busqueda binaria pero buscando por el elemento menor mas cercano, si no hay antecesor, entonces la ultima cant es 0
+    if(t < s.boletosAcumuladosPorTiempo.minimo){ //es la primera fecha entonces la ultima cant es 0
+        return 0;
+    } else{
+        getAntecesorAVL(s.boletosAcumuladosPorTiempo); //Algoritmo del Cormen, corre en O(log n)
+        return s.boletosAcumuladosPorTiempo[getAntecesorAVL];
+    }
+}
+
+proc moverResto(inout s:SuecoImpl, in t:Tiempo){
+    Iterador it := s.boletosAcumuladosPorTiempo.iterador(); //O(1)
+    while(it.haySiguiente()){ //O(n)
+        if(it.siguiente() == t){ //recorro hasta encontrar t porque no se inicializar el iterador en una pos especifica
+            break;
+        }
+    }
+    while(it.haySiguiente()){ //O(n) //ahora voy corriendo desde t hasta el final sumando uno
+        it.haySiguiente().obtener++; //sumo a la cantidad 
+    }
+}
