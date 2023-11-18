@@ -1,3 +1,10 @@
+Dudas:
+Ej 3)
+Ej 4) Complejidad
+
+
+
+
 (5) Se tiene un arreglo de n numeros naturales que se quiere ordenar por frecuencia, y en caso de 
 igual frecuencia, por su valor. Por ejemplo, a partir del arreglo [1, 3, 1, 7, 2, 7, 1, 7, 3] 
 se quiere obtener [1, 1, 1, 7, 7, 7, 3, 3, 2]. 
@@ -53,3 +60,5 @@ proc ordenarDificil(inout a: Arr[int]){
 
 RadixSort(orden en funcion cantDigitos, me importa la cantDigitos), usa BucketSort
 RadixSort: O(n*d)
+
+HeapSort: me sirve cuando quiero tener un heap porque me intersa sacar k elementos 

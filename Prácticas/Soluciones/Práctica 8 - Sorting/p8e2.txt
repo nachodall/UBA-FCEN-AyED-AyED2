@@ -1,0 +1,16 @@
+//Imagine secuencias de naturales de la forma s = Concatenar (s′,s′′), 
+//donde s′ es una secuencia ordenada de naturales y s′′ es una secuencia de naturales elegidos al azar.
+//¿Que metodo utilizaria para ordenar s? Justificar. 
+//(Entiendase que s′ se encuentra ordenada de la manera deseada.)
+
+[s': 1,2,3,4,5,  s'': 9,7,8,6]
+Podria usar una implemtacion Divide & Conquer como Merge sort pero en lugar de realizar la primera division
+por 2, busco el primer elemento desordenado (comienzo de s'') y divido, ya se que la parte de la izquierda
+esta ordenada entonces solo ordeno la otra mitad y hago algoritmo de fusion. 
+
+PoneleQueUnMergeSort(Array A):
+    int mitad = BuscarComienzoDeS''(A);
+    Array s' = A[0...mitad-1];
+    Array s'' = A[mitad...A.length-1];
+    mergeSort(s'');
+    fusion(s',s'');

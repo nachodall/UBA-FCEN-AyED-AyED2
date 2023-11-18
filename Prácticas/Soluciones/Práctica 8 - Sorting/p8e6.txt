@@ -1,0 +1,30 @@
+La idea es dividir todas las escaleras en subarrays y luego ordenarlos 
+
+
+ordenarEscaleras(Array<nat> arr): Array<nat>
+    Vector<Vector<nat>> escaleras := obtenerEscaleras(arr); //O(n^2)
+    mergeSortPorPrimerElem(escaleras); //Ordeno las escaleras usando como criterio el primer elemento de cada subsecuencia, ademas con un algoritmo estable para que me conserve el orden //O(n log n)
+    mergeSortPorLongitud(escaleras); //Ordeno las escaleras usando escaleras[i].longitud como criterio //O(n log n)
+
+    //armo la res 
+    Array<nat> res := new Array[arr.length]; //O(n)
+    for(i=0; i<escaleras.lenght; i++) //O(n) //O(n)
+        for(j=o; j<escaleras[i].length; j++) //O(n)
+            res.agregar(escaleras[i][j]); 
+
+    Complejidad : 2 * O(n^2) + 3 * O(n) + 2 * O(n log n) = O(n^2)
+
+obtenerEscaleras(Array<nat> arr): Vector<Vector<nat>>
+    Vector<Vector<nat>> res := VectorVacio();
+    Vector<nat> aux := VectorVacio;
+    aux.agregar(arr[0]);
+
+    for(i=0; i<arr.length-1; i++) //O(n)
+        if(arr[i] == arr[i-1] + 1) //si cumple ser escalera lo agrego
+            aux.agregar(arr[i]); //O(n)
+        else                        // cuando deja de ser escalera pongo el aux en res y el aux lo limpio con el nuevo elem
+            res.agregar(aux); //O(n)
+            aux := VectorVacio();
+            aux.agregar(arr[i]); //O(n)
+    
+    return res

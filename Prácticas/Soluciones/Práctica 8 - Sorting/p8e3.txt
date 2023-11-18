@@ -1,0 +1,29 @@
+//Escribir un algoritmo que encuentre los k elementos mas chicos de un arreglo de dimension n, 
+donde k ≤ n. ¿Cual es su complejidad temporal? 
+¿A partir de que valor de k es ventajoso ordenar el arreglo entero primero? ---??????????
+
+getKSmallest(Array a, int k)
+    heapify(a); //O(n) 
+    Array res := new Array[k]; //O(k)
+    int i := 0; //O(1)
+
+    while(i<k) //O(k)
+        res.agregarRapido(a.desencolar()); //O(1) + O(n log n)
+        i++; //O(1)
+
+    return res;
+
+Complejidad: O(k + n + k * n log n) = O(k * n log n) //no tiene sentido es mas caro que heapSort 
+Conviene ordenar de una y fi
+
+sortearHeap(a); //O(n log n)
+while (i<k)
+    res := res.agregarRapido[i]; //O(1)
+
+O(n log n + k)
+
+//Googlee y hay un algoritmo que se llama QuickSelect para hacer esto
+
+
+
+

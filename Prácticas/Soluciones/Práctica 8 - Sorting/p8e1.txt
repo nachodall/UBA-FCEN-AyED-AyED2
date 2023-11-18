@@ -1,0 +1,19 @@
+//esto lo hice re informal para ir entendiendo cada algoritmo
+
+Merge(Divide and Conquer):
+O(n log n) sin importar el orden inicial
+
+Insertion(agarrar a c/elem y ponerlo en su pos y hacer los corrimientos):
+su peor caso es cuando estan ordenados en forma invertida ya que siempre realiza corrimientos ==> O(n^2)
+
+Selection(agarrar el min/max e ir llevandolo para adelante): 
+En este caso selection es muy ineficiente ya que realiza la mitad de las comparaciones al pedo ya que lo ordena en la mitad de tiempo pero sigue consultado para buscar minimo y etc ==> O(n^2)
+
+Bubble(en c/iteracion lleva al ultimo para el final y es el que compara dos elementos consecutivos):
+En este caso tiene O(n^2), porque siempre hace corrimientos 
+
+Quick(el del pivote que pasa para el final y usa dos punteros y va intercambiando):
+Este caso es malo xq siempre va a tener que pasar muchos para izquieda y derecha ==> O(n^2)
+
+Heap(Creo un heap, voy poppeando elementos, heapificando y los agrego a un arreglo atras):
+O(n log n) sin importar mi output

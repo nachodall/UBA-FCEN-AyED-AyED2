@@ -1,0 +1,84 @@
+Modulo ConjuntoNaturales<Nat> implementa Conjunto<Nat>{
+    var elems: ListaEnlazada<Nat>  
+
+    proc agregar(inout c: ConjuntoNaturales<Nat>, in n: nat){
+        Complejidad: O(1) si el elemento es minimo o maximo, O(n) sino
+
+        NodoLista nue := new NodoLista(n); //asi construyo el nodo
+        if(n < c.elems.primero){
+            c.agregarAdelante(nue); //automaticamente ya hace el enganche con los sig??
+        } 
+        else if(n > c.elems.ultimo){
+            c.agregarAtras(nue);
+        } 
+        else{
+            agregarOrdenado(c,nue); //O(n)
+        }
+    }
+
+    proc agregarOrdenado(inout c: ConjuntoNaturales<Nat>, in nue: NodoLista){
+        NodoLista aux = c.elems.primero.sig;
+        NodoLista ant = c.elems.primero;
+
+        while(aux.dato != nil){
+            if(ant.val <= nue.val <= aux.val){
+                ant.sig := nue;
+                nue.ant := ant;
+                nue.sig := aux;
+                aux.ant := nue;
+            }
+            ant := aux;
+            aux := aux.sig;
+        }
+    }
+
+    proc interseccion(in c1, c2: ConjuntoNaturales<Nat>): ConjuntoNaturales<Nat>{
+        Complejidad: O(1) si todos los elems de algun cjnto son mas grandes que todos los del otro
+                     sino O(n+m)
+
+        if(c1.elems.ultimo.val > c2.elems.primero.val){ //al llamar a ultimo devuelve el dato o el nodo
+            res := listaVacia(); //vale?
+        } 
+        else if(c2.elems.ultimo.val > c1.elems.primero.val){
+            res := listaVacia();
+        }
+        else{
+            NodoLista aux1 := new Nodo(c1.elems.primero.val);
+            NodoLista aux2 := new Nodo(c2.elems.primero.val);
+
+            while(aux1 != nil && aux2 != nil){
+                if(aux1.val == aux2.val){
+                    res.agregarAtras(aux1);
+                    aux1 := aux1.sig;
+                    aux2 := aux2.sig;
+                }
+                else if(aux1.val > aux2.val){
+                    aux2 := aux2.sig;
+                } else{
+                    aux1 := aux1.sig;
+                }
+            }
+        }
+
+        return res;
+    }
+
+    proc union(in c1,c2: ConjuntoNaturales<Nat>): ConjuntoNaturales<Nat>{
+        Complejidad: idem interseccion
+
+        if(c1.elems.ultimo.val > c2.elems.primero.val){ 
+            c1.elems.ultimo.sig := c2.elems.primero;
+            c2.elems.primero.ant := c1.elems.ultimo;
+            return c1;
+        } 
+        if(c2.elems.ultimo > c1.elems.primero){
+            c2.elems.ultimo.sig := c1.elems.primero;
+            c1.elems.primero.ant := c2.elems.ultimo;
+            return c2;
+        }
+        else{
+            c1.elems.concatenar(c2);
+            return c1;
+        }
+    }
+}

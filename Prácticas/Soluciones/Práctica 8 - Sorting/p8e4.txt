@@ -1,0 +1,23 @@
+Se tiene un conjunto de n secuencias {s1, s2, . . . , sn} en donde cada s_i
+(1 ≤ i ≤ n) es una secuencia ordenada de naturales. 
+¿Que metodo utilizaria para obtener un arreglo que contenga todos los elementos de la union de los si ordenados?
+Describirlo. Justificar.
+
+[[1,4,5],[2,9],[0,2],[3],[6,7,8]]
+Hago un Merge de todos los s_i, talque:
+[[1,4,5,9], [0,2], [3], [6,7,8]]
+[[0,1,2,3,4,5,9], [3], [6,7,8]]
+[[0,1,2,3,4,5,9], [6,7,8]]
+[0,1,2,3,4,5,6,7,8,9]
+
+OrdenarSubsequenciasOrdenadas(Array(Array int) a)
+    Array res := new Array[longitudTotal(a)]; 
+    int i := 0; 
+    while(i < a.length){ 
+        res := merge(a[i],res); 
+        i++;
+    }
+    return res;
+
+Complejidad??
+

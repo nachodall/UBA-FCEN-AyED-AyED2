@@ -1,0 +1,112 @@
+Modulo Fulbo implementa Torneo{
+    Equipo, Puntaje, Pos, Cant son int;
+    //El truco es que no necesito correr todas las posiciones anteriores si subo uno por la forma en que se cuentan las posiciones(puede haber 3 primeros, 5 segundos, etc)
+    var puntosDeEquipo : DiccLog(Equipo, Puntaje);
+    var posicionPorPuntaje : DiccLog(Puntaje, struct(pos:Pos, cant:Cant));
+
+    pred invRep(t:Fulbo){
+        forall e:Equipo :: e in t.puntosDeEquipo ==>L t.puntosDeEquipo[e] in t.posicionPorPuntaje && //todos los puntos tienen una posicion por puntaje
+        forall p:Puntaje :: p in t.posicionPorPuntaje ==>L 
+                            t.posicionPorPuntaje[e].cant == sum e:Equipo :: e in t.puntosDeEquipo :: if t.puntosDeEquipo[e] == p then 1 else 0 fi && //la cant de equipos por puntaje es efectivamente todos los equipos que tienen esos puntos 
+                            forall e1,e2:Equipo :: e1,e2 in t.puntosDeEquipo && t.puntosDeEquipo[e1] > t.puntosDeEquipo[e2] ==>L t.posicionPorPuntaje[t.puntosDeEquipo[e1]].pos > t.posicionPorPuntaje[t.puntosDeEquipo[e1]].pos && //si tiene mas puntos tiene una pos mas alta 
+                            forall e1,e2:Equipo :: e1,e2 in t.puntosDeEquipo && t.puntosDeEquipo[e1] == t.puntosDeEquipo[e2] ==>L t.posicionPorPuntaje[t.puntosDeEquipo[e1]].pos == t.posicionPorPuntaje[t.puntosDeEquipo[e1]].pos && //si tiene los mismos puntos misma pos
+                            forall e1,e2:Equipo :: e1,e2 in t.puntosDeEquipo && t.puntosDeEquipo[e1] < t.puntosDeEquipo[e2] ==>L t.posicionPorPuntaje[t.puntosDeEquipo[e1]].pos < t.posicionPorPuntaje[t.puntosDeEquipo[e1]].pos //si tiene menos puntos, menor pos
+    }
+
+    aux fabs(t:Fulbo):Torneo{
+        t':Torneo | 
+        forall e in t'.equipos <==> e in t.puntosDeEquipo && 
+        forall p in t'.partidos <==> p.ganador, p.perdedor in t.puntosDeEquipo &&
+        forall e in t'.equipos ==> t.puntosDeEquipo[e] == sum 0<=i<t'.partidos.length :: if t'.partidos[i].ganador == e then 1 else 0 fi 
+    }
+
+    proc nuevoTorneo(): Fulbo{
+        res.puntosDeEquipo := diccionarioVacio(); //O(1)
+        res.posicionDeEquipo := diccionarioVacio(); //O(1)
+    }
+
+    proc registrarPartido(inout t:Fulbo, in ganador, perdedor: Equipo){
+        //veo si el ganador estaba en la estructura o es el primer partido que juega
+        if(ganador in t.puntosDeEquipo){
+            //Actualizo los puntos y veo si subio de posicion 
+            actualizarTabla(t,ganador);
+        } else{
+            agregarConUnPunto(t, ganador); //lo agrego con un punto
+        }
+
+        if(perdedor not in t.puntosDeEquipo){
+            agregarCon0Puntos(t, perdedor);
+        }
+    }
+
+    proc actualizarTabla(inout t: Fulbo, in ganador: Equipo){
+        //Opcion 1: esta solo 
+        //Opcion 2: esta con alguien
+        //Opcion 1.1: esta solo y +1 punto no hay nadie 
+        //Opcion 1.2: esta solo y +1 punto hay alguien 
+        //Opcion 2.1: esta con alguien y +1 punto no hay nadie 
+        //Opcion 2.2: esta con alguien y +1 punto hay alguien 
+
+        Puntaje puntajeAnterior := t.puntosDeEquipo[ganador]; //O(log n)
+        t.puntosDeEquipo[ganador]++; //O(log n)
+        Struct(pos,cant) t.PosAnterior := t.posicionPorPuntaje[ganador]; //O(log n)
+
+        if(t.posicionPorPuntaje[puntajeAnterior].cant = 1){ //Op1
+            if(puntajeAnterior+1 in t.posicionPorPuntaje){ //Op1.2 //ya hay alguien entones aumento la cant y estoy solo entonces borro el ant
+                t.posicionPorPuntaje[puntajeAnterior+1].cant++; //O(log n)
+                t.posicionPorPuntaje.borrar(puntajeAnterior); //O(log n)
+            }
+            else { //Op1.1 //no hay nadie entonces defino el nuevo puntaje con la misma pos y misma cant, borro la ant
+                t.posicionPorPuntaje.definir(puntajeAnterior+1, t.posAnterior); //O(log n)
+                t.posicionPorPuntaje.borrar(puntajeAnterior); //O(log n)
+            }
+        } 
+        else { //Op2
+            if(puntajeAnterior+1 in t.posicionPorPuntaje){ //Op2.2 //no esta solo entonces saca 1 de la cant y hay uno en la pos de arriba entonces no toca posiciones solo suma cant
+                t.posicionPorPuntaje[puntajeAnterior+1].cant++; //O(log n) 
+                t.posicionPorPuntaje[puntajeAnterior].cant--; //O(log n) 
+            }
+            else{ //Op2.1 //no esta solo entonces saca 1 de la cant de estos puntos, no hay nadie arriba entonces +1 pos nueva y menos 1 vieja
+                t.posicionPorPuntaje.definir(puntajeAnterior+1, (t.posicionPorPuntaje[puntajeAnterior].pos, 1)); //O(log n)
+                t.posicionPorPuntaje[puntajeAnterior].cant--; //O(log n)
+                t.posicionPorPuntaje[puntajeAnterior].pos--; //O(log n)
+            }
+        }
+    }
+
+    proc agregarConUnPunto(inout t:Fulbo, in ganador:Equipo){
+        t.puntosDeEquipo.definir(ganador, 1); //O(log n)
+
+        //hay varios con 1pto
+        if(1 in t.posicionPorPuntaje){ //O(log n)
+            t.posicionPorPuntaje[1].cant++; //O(log n) //lo agrego a esa pos
+        } 
+        //no hay nadie con un punto
+        else{
+            //hay alguien con 0 ==> hago un corrimiento
+            if(0 in t.posicionPorPuntaje){
+                t.posicionPorPuntaje.definir(1,(t.posicionPorPuntaje[0], 1)) //O(log n) //lo defino con un solo equipo y con la ultima pos que por ahora es la del 0
+                t.posicionPorPuntaje[0].pos++; //O(log n) //creo una pos mas abajo para los ultimos
+            } else{
+            //no hay nadie con 0 entonces es el ultimo
+                Pos ultimaPos := t.posicionPorPuntaje.tamaño; //O(1)
+                t.posicionPorPuntaje.definir(1,<ultimaPos+1, 1>) //O(log n) //creo una posicion mas para poner el 1
+            }
+        }
+    }
+
+    proc agregarCon0Puntos(inout t:Fulbo, ganador:Equipo){
+        t.puntosDeEquipo.definir(ganador, 0); //O(log n)
+
+        if(0 in t.posicionPorPuntaje){
+            t.posicionPorPuntaje[0].cant++; //O(log n) 
+        } else{
+            Pos ultimaPos := t.posicionPorPuntaje.tamaño; //O(1)
+            t.posicionPorPuntaje.definir(0,<ultimaPos+1, 1>) //O(log n) //creo una posicion mas para poner el 1
+        }
+    }
+
+    proc posicion(in t:Fulbo, in e:Equipo):Pos{
+        return t.posicionPorPuntaje[t.puntosDeEquipo[e]].pos; //O(log n)
+    }
+}

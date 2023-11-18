@@ -1,0 +1,67 @@
+	Modulo MatrizInfinitaDeBooleanosImpl implementa MatrizInfinitaDeBooleanos{
+
+	var m: Array<Array<Boolean>> //se puede usar Vector??
+	var invertida: Boolean
+
+	function Crear(out e: MatrizInfinitaDeBooleansImpl){
+		invertida := false;
+		//como creo m en O(1)??
+	}
+
+	function Asignar(inout e: MatrizInfinitaDeBooleansImpl, in b: Boolean, in i: nat, in j: nat){
+		if(e.invertida == true){
+			e.m[i][j] := !b;
+		} else {
+			e.m[i][j] := b;
+		}
+	} //O(1), como se si esta llena la matriz si es "infinita"
+
+	function Ver(in e: MatrizInfinitaDeBooleansImpl, in i: nat, in j: nat, out: res){
+		if(e.invertida == true){
+			return !e.m[i][j];
+		} 
+		return e.m[i][j];
+	} //O(1)
+
+	function Complementar(inout e: MatrizInfinitaDeBooleansImpl){
+		Boolean aux := e.invertida;
+		e.invertida := !aux;
+	}
+
+	function Intersecar(in e1, e2: MatrizInfinitaDeBooleansImpl){
+		MatrizInfinitaDeBooleansImpl res = new MatrizInfinitaDeBooleansImpl();
+
+		int maxFilas := max(e1.length, e2.length);
+		int maxColumnas := max(e1.m[o].length, e2.m[0].length);
+
+		for(int i=0; i<maxFilas; i++){
+			for(int j=0; j<maxColumnas; j++){
+
+				if(e1.invertida != True){
+					if(e2.invertida != True){ //ninguna invertida
+						if(e1.m[i][j] == e2.m[i][j]){
+							res[i][j] == e1.m[i][j];
+						}
+					}
+					else{ // e2 sola invertida
+						if(e1.m[i][j] == !e2.m[i][j]){
+							res[i][j] == e1.m[i][j];
+						}
+					}
+				} else {
+					if(e2.invertida == True){ //ambas invertidas
+						if(e1.m[i][j] == e2.m[i][j]){
+							res[i][j] == !e1.m[i][j];
+						}
+					}
+					else{ // e1 sola invertida
+						if(!e1.m[i][j] == e2.m[i][j]){
+							res[i][j] == !e1.m[i][j];
+						}
+					}
+				}
+
+			}
+		}
+	}
+}
