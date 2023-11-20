@@ -1,0 +1,14 @@
+En este caso llamasmos a raiz(n) como una constante para el analisis asintotico
+ya que crece mucho mas lento O(n)
+
+ordenarEj12(Array arr)
+    enRango := new Array[cantElemsEnRango]; //O(n)
+    fueraRango := newArray[cantElemsFueraDeRango(arr)]; //O(n)
+    enRango := AgregarElementosEnRango(arr,enRango); //O(n)
+    fueraRango := AgregarElementosFueraRango(arr,); //O(n)
+
+    countingSortEnRango(enRango, 20, 40); //O(n)
+    ordenarFueraRango(fueraRango); O(raiz(n) log (raiz(n))) //O(1) 
+    res := merge(enRango, fueraRango); O(raiz(n) + O(n)) // O(n)
+
+

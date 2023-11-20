@@ -1,0 +1,20 @@
+(1)
+Me dice que la complejidad debe ser O(nl + n log n)
+Como hay que ordenar por dos valores, se que como c1 es nat, el orden con respecto
+a la primera componente sera en en log n, mientra que para el orden de c2 que es string 
+se debera ordenar de alguna forma lineal pero que sera O(nl) pues la comparacion de strings se realiza en O(l)
+
+ordenarTuplas(Array arr)
+    radixSort(arr); //Clave de ordenamiento, c2, O(nl)
+    mergeSort(arr); //Clave de ordenamiento, c1, O(n log n)
+
+Radix Sort tiene una complejidad de O(l*(n+k)) donde l es la longitud maxima de un string,
+n es la cantidad de elementos y k es el tamaño del alfabeto de los strings. En este caso suponemos que 
+se trata de caracteres ascii ==> k=256, luego O(l*(n+256)) = O(nl)
+
+(2)
+ordenarTuplas(Array arr, int k)
+    radixSort(arr); //Clave de ordenamiento, c2, O(nl)
+    countingSort(arr, k); //Clave de ordenamiento, c1, O(n), ya que k esta acotado 
+
+==> Complejidad = O(n) + O(nl) = O(nl)
