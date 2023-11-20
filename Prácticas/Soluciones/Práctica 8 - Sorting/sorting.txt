@@ -4,7 +4,7 @@ Ej 4) Complejidad
 Ej 8) Complejidad
 Ej 10) ver si esta bien
 Ej 11) Complejidad del ultimo for 
-
+Ej 14) no me dio la complejidad
 
 
 (5) Se tiene un arreglo de n numeros naturales que se quiere ordenar por frecuencia, y en caso de 

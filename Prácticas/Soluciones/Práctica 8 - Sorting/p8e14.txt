@@ -1,0 +1,15 @@
+ordenarMultiplos(Array(int) a, int k)
+    mergeSort(a); //O(n log n)
+    var ak : Array(Array(int)) := crearArreglo(k); //O(k)
+
+    for(i:=0, i<k, i++) //O(k) ==> O(nk)
+        ak[i] := multiplicarTodos(a, i); //O(n)
+    
+    //llamo a OrdenarSubsequenciasOrdenadas del ejercicio 4 
+    res := OrdenarSubsequenciasOrdenadas(ak); //O(nk log k) //hay k subarreglos y nk elementos en ak
+
+Complejidad: O(n log n) + O(k) + O(nk) + O(nk log k) = O((n log n) + (nk log k))
+    
+
+
+    

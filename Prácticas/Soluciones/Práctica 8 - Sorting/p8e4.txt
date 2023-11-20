@@ -11,13 +11,14 @@ Hago un Merge de todos los s_i, talque:
 [0,1,2,3,4,5,6,7,8,9]
 
 OrdenarSubsequenciasOrdenadas(Array(Array int) a)
-    Array res := new Array[longitudTotal(a)]; 
-    int i := 0; 
-    while(i < a.length){ 
-        res := merge(a[i],res); 
-        i++;
-    }
-    return res;
+    if(a.lenght = 1)
+        return a[0]
+    else 
+        mitad := a.length / 2l
+        res := merge(OrdenarSubsequenciasOrdenadas(a[0...mitad]),
+                     OrdenarSubsequenciasOrdenadas(a[mitad+1...a.length-1]))
 
-Complejidad??
+
+Complejidad: O(m log n) donde n es la cantidad total de elementos de todas las subsecuencias y n la cant de subsecuencias
+como vemos n se va diviendo de a 2, ==> n/2^i <==> i = log(n), el costo del merge es O(m) pues siempre se terminaran comparando los m elementos.
 
