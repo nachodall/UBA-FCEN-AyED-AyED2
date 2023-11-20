@@ -1,0 +1,49 @@
+Primero nos enfocamos en que piden O((n'+m)log(n'+m))
+Esto nos da un indicio que debemos ordenar dos arreglos uno de m, otro de n' con
+algun algoritmo que ordene en esa complejidad.
+B es facil ya que no tiene restricciones y tiene m elementos.
+A nos dice que tiene n' subsecuencias de repetidos continuos. 
+Como nos dice que hay que ordenar con complejidades en n', proponemos crear un arreglo de los n' 
+elementos distintos, ordenarlo y luego volver a completar el arreglo 'completo' pero con el orden 
+que obtuvimos. Finalmente usar un algoritmo de merge 
+
+proc ordenarAyB(a,b: Array)
+    mergeSort(b) //O(m log m)
+
+    var cantDeRepes : Array<Tupla<int,int> := new Array(a)
+    int j := 0;
+    //si es igual al q sigue subo a la cantRepes y sino subo el indice q me va diciendo "cuantos elems distintos hay"
+    for(i:=0, i<a.length-1, i++) //O(n)
+        if a[i] == a[i+1]
+            cantDeRepes[j][1]++
+        else 
+            j++
+    
+    cantDeRepes := cantDeRepes[0...j] //aca digo que solo me fijo en el subArray que efectivamente esta lleno ya que son jos j elementos distintos //O(n)
+    mergeSortPorKey(cantDeRepes) //O(n' log n')
+
+    //armamos a ordenado
+    auxA := new Array(a.length)
+    for(i:=0, i<cantDeRepes, i++) //O(n) porque al fin y al cabo revisara los n elementos de a
+        int k:=0
+        while(k<cantDeRepes[i][1])
+            auxA.agregarRapido(cantRepes[i][0])
+            k++
+    
+    //mergeamos a y b 
+    var res: Array<int> := merge(a,b) //O(n + m)
+    return res 
+
+    Suma de complejidades: O(n) + O(n' log n') + O(m log m) + O(n + m) = O((n+m)+(n'+ m) log (n'+m))
+    
+b) Seria igual que el anterior pero en lugar de ordenar b y luego usar merge 
+buscamos en m y vamos agregando la cant de elementos a nuestro array cantRepes 
+finalmente solo ordenamos ese arreglo y lo "ampliamos"
+
+
+
+
+    
+
+
+            

@@ -1,0 +1,19 @@
+(1)
+Planilla es Array <alumno>
+alumno es struct<nombre:str, genero:enum{masc,fem}, Nota: nat>
+
+ordenaPlanilla(inout arr: Planilla)
+    arr := countingSortDescendientePorNota(arr); //O(n+10) = O(n)
+    arr := countingSortDescendientePorGenero(arr); //O(n+2) + O(n)
+    //necesito explicar como es el counting?? o que en este caso llamaria a masc 1 y fem 2 para ordenar por numeros 
+
+(2) La idea de mi counting por genero del inciso anterior era hacer un array de 2 (1xcada genero), agregar cada uno a su genero disponible (en un conjunto)
+y luego concatenar ambos conjuntos, y despues pasarlo a un array, todo en O(n)
+Aca tendria la misma idea pero con k cantidad de generos 
+
+(3) Counting Sort no rompe el teorema "lower bound" ya que este aplica para algoritmos que realizan comparaciones 
+(basado en el decision tree) y el counting sort solamente cuanta la cantidad de elementos que aparece cada elemento < n. el n previamente establecido 
+
+
+
+

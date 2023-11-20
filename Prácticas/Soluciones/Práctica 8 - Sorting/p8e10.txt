@@ -1,0 +1,12 @@
+(1)
+casiSortImple(Array arr)
+    while(arr.len > 1)
+        casiSortAlgoritmo(arr) //theeta(n)
+        mitad := (arr.len / 2) + 1
+        arr = arr[mitad...arr.len-1]
+
+(2) El algoritmo anterior tiene una complejidad de O(n log n) ya que 
+    realiza O(n), log n veces ya que voy reduciendo al arreglo por la mitad
+
+(3) No creo que sea posible porque al ser un algoritmo que utliza comparaciones 
+    romperia con el teorema "lower bound"

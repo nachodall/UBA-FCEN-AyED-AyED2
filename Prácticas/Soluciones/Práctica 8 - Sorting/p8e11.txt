@@ -1,0 +1,12 @@
+El algoritmo es basicamente Counting Sort
+
+algoritmoEj11(Array arr, nat k)
+    counting := new Array[k] //O(k) = O(1)
+    for(i:=0, i<arr.len, i++) //O(n)
+        counting[i]++
+    res := new Array[arr.len] //O(n)
+    for(i:=0, i<counting.len, i++) //O(k) = O(1)
+        agregarAtras(res,i,counting[i]) //agrega atras en res a i, counting[i] veces //O(n)
+
+en total agregara a los n elementos entonces tenemos O(n)
+

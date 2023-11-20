@@ -1,7 +1,9 @@
 Dudas:
 Ej 3)
 Ej 4) Complejidad
-
+Ej 8) Complejidad
+Ej 10) ver si esta bien
+Ej 11) Complejidad del ultimo for 
 
 
 

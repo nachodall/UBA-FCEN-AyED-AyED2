@@ -1,0 +1,24 @@
+Recontra pseudocodigo
+
+AVLSort(Array arr)
+    avl := crearAVL(arr); //O(n log d) *
+    while(hayElementos(avl)) *2 //O(n)-O(1)
+        min := quitarMinimo(avl); //O(log d)
+        agregarAtrasRepesDeMin(min,res); //O(1) - O(n)
+
+avl es un struct <hi,hd,dato>
+dato es un struct <valor, repeticiones>
+avl esta acomodado por alor 
+
+*recorro todos los elems de arr O(n) y armo el avl sabiendo que solo estaran los elementos distintos
+==> para reacomodar se usa log d en lugar de log n
+
+*2 veamos que aca pueden haber distintos casos para ver la complejidad:
+    si los elementos son todos distintos, entones d = n se ejecuta y todos los elementos tienen 1 repe ==> agregarRepes esta en O(1) y el while se ejecuta O(n)
+    al final nos quedaria O(n log n)
+
+    si hay un solo elementos muchas veces, se ejecuta el while en O(1) y agregar repes ==> O(1)*O(log d) + O(log n) que al fin y al cabo es menor que O(n log n)
+
+    en un caso promedio siempre se ira produciendo un "trade-off" entre las repeticiones de los elementos y la cantidad de elementos 
+
+    Por ende la complejidad final es O(n log n)
