@@ -1,0 +1,11 @@
+tieneAgujero?(Array arr): bool 
+    //busco el maximo porque al ser un arreglo de naturales si conozco la cota inferior puedo realizar countingSort 
+    int maxElem := buscarMaximo(arr); //O(n)
+    countingSort(arr,maxElem); //O(n)
+    int i := 1;
+    res := false;
+    while(i < arr.len-1 && res == false) //O(n)
+        if arr[i] == arr[i-1] + 1 && arr[i] == arr[i+1] - 1 
+            res := true;
+    return res;
+           

@@ -1,0 +1,32 @@
+(1)
+countingSort(arr)
+
+(2)
+La clave en este ejercicio es pasar todos los elementos de mi array a base n, ya que se que a lo sumo n^2 tendra dos digitos 
+
+ordenarN^2(Array arr)
+    //paso todos a base n
+    n := arr.len
+    for i=0...n //O(n)
+        a[i] = cambiarABaseN(arr[i])
+    
+    countingSortSegundoDigito(arr) //mi k es n ==> O(n+k) = O(n)
+    countingSortPrimerDigito(arr) //mi k es n ==> O(n+k) = O(n)
+
+Complejidad: O(n) + O(n) = O(n)
+
+(3)
+Es la misma idea, pasando el numero a baseN asi sabemos que n^k, tendra k digitos 
+Tendra Complejidad talque, O(n) + O(n) + O(n)... = O(k.n), si k es una constante arbitraria, tendremos complejidad, O(n)
+
+ordenarN^k(Array arr)
+    //paso todos a base n
+    n := arr.len
+    for i=0...n //O(n)
+        a[i] = cambiarABaseN(arr[i])
+
+    j := 0
+    while(j<k) //O(k)
+        countingSortJDigito(arr) //O(n)
+
+(4) O(nk)

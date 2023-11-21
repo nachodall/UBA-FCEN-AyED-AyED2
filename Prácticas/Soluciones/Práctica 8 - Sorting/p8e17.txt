@@ -1,0 +1,16 @@
+Al ver posibles inputs para este problema, nos damos cuenta que siempre se cumple que
+en el indice 0 hay n posibilidades de elementos posibles en un input valido,
+en el 1, hay n-1
+en el 2, hay n-2
+..
+en el n-1 hay 2 posibilidades 
+Si vamos sacando de atras para adelante, vamos reduciendo las posibles entradas de los primeros,
+entonces basta con ir recorriendo de atras para adelante y swappeando cuando no esten en orden 
+
+swapSort(arr: Array)
+    requiere: sinRepetidos(arr) &&L (forall i:int :: 0<=i<=arr.length ==>L sum j:int :: 0<=j<=arr.length :: if arr[j] <= i then 1 else 0 fi <= i)
+
+    for(int i:=arr.len-1, i<1, i--) //O(n)
+        if a[i] < a[i-1]
+            swap(a[i], a[i-1])
+        

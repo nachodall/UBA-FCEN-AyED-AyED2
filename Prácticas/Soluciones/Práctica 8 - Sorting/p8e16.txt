@@ -1,0 +1,10 @@
+Para esta resolucion nos basamos en que sabemos que la cantidad de bits de un numero m es log_2(m)
+==>
+
+raroSort(arr:Array, m:int)
+    int cantDigitos := log_2(m); //O(1)
+
+    for(i:=0, i<cantDigitos, i++) //O(log m)
+        countingSort(arr,i); //O(n) Hacemos Counting con el digito que le pasé
+
+==> Complejidad = O(n log m)    
