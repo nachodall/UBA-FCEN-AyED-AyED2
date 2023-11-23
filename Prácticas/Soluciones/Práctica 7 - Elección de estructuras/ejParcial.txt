@@ -23,12 +23,13 @@ Modulo SistemaDeNotas{
     nota es int 
 
     var materias: DiccLog(materia, DiccDigital(alumno, nota)) //Como las LU estan acotadas, acomodo mi conjunto, por LU y me permite realizar operaciones en O(1)
-    var cantAlumnosConNota: Array(int) //este array tiene 10 posiciones (1 por cada nota)
+    var cantAlumnosConNota: DiccLog(materia, Array(int)) //este array tiene 10 posiciones (1 por cada nota), me guarda cuantos alumnos sacaron cada nota 
 
     RegistrarMateria(inout s: Sistema, in m: materia){
 	    Complejidad: O(log m)
 
         s.materias.definir(m, conjuntoVacio); //O(log m)
+        s.cantAlumnosConNota.definir(m, new Array[10]); //O(log m)
     }
 
     RegistrarNota(inout s: Sistema, in m: materia, in a: alumno, in n: nota){
@@ -37,7 +38,7 @@ Modulo SistemaDeNotas{
         //asumo aliasing
         DiccDigital alumnosDeMateria := s.materias[m]; //O(log m)
         alumnosDeMateria.definir(a,n); /O(1)
-        s.CantAlumnosConNota[n]++;
+        s.CantAlumnosConNota[m][n]++;
     }
 
     NotaDeAlumno(in s: Sistema, in a: alumno, m: materia): nota{
@@ -46,16 +47,17 @@ Modulo SistemaDeNotas{
         nota Res := s.materias[m][a].obtener; //O(log m) + O(1)
     }
 
-    CantAlumnosConNota(in s: Sistema, in n: nota): nat{
+    CantAlumnosConNota(in s: Sistema, in n: nota, in m: materia): nat{
         Complejidad: O(log m)
 
-        return s.cantAlumnosConNota[n];
+        return s.cantAlumnosConNota[m][n];
     }
 
     CantAlumnosAprobados(in s: Sistema, in m: materia): int{
         int res := 0;
-        for i:=5...9 //O(1) //supongo que se aprueba con 6 como en esta materia
-            res+=s.cantAlumnosConNota[i];
+        Arrat(int) cantNotasDeM := s.cantAlumnosConNota[m];
+        for i:=5...cantNotasDeM.length //supongo que se aprueba con 6
+            res += cantNotasDeM[i];
         return res;
     }
 
