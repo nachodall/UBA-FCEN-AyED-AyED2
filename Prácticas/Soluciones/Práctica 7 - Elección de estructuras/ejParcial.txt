@@ -1,0 +1,62 @@
+
+E4. Elección de estructuras
+Quiero hacer un sistema para registrar las notas de los alumnos en una facultad.
+Los alumnos se identifican con LU. Las LU tienen un número (secuencial, menor que 10000) y un año (LU 192/95). 
+Las materias tienen un nombre, pero por simplicidad las identificamos con un número. Puede haber una cantidad no acotada de materias. 
+Las notas están entre 0 y 10. Aprueban si la nota es mayor a 7.
+Se pide elegir la estructura que permita cumplir con los siguientes requisitos de complejidad, sabiendo que m es la cantidad de materias:
+
+- RegistrarMateria(inout s: Sistema, in m: materia)
+	Complejidad: O(log m)
+- RegistrarNota(inout s: Sistema, in m: materia, in a: alumno, in n: nota)
+	Complejidad: O(log m)
+- NotaDeAlumno(in s: Sistema, in a: alumno, m: materia): nota
+	Complejidad: O(log m)
+- CantAlumnosConNota(in s: Sistema, in n: nota): nat
+	Complejidad: O(log m)
+- CantAlumnosAprobados(in s: Sistema, in m: materia): nat
+	Complejidad: O(log m)
+
+Modulo SistemaDeNotas{
+    materia es int 
+    alumno es LU, o sea digamos string
+    nota es int 
+
+    var materias: DiccLog(materia, DiccDigital(alumno, nota)) //Como las LU estan acotadas, acomodo mi conjunto, por LU y me permite realizar operaciones en O(1)
+    var cantAlumnosConNota: Array(int) //este array tiene 10 posiciones (1 por cada nota)
+
+    RegistrarMateria(inout s: Sistema, in m: materia){
+	    Complejidad: O(log m)
+
+        s.materias.definir(m, conjuntoVacio); //O(log m)
+    }
+
+    RegistrarNota(inout s: Sistema, in m: materia, in a: alumno, in n: nota){
+        Complejidad: O(log m)
+
+        //asumo aliasing
+        DiccDigital alumnosDeMateria := s.materias[m]; //O(log m)
+        alumnosDeMateria.definir(a,n); /O(1)
+        s.CantAlumnosConNota[n]++;
+    }
+
+    NotaDeAlumno(in s: Sistema, in a: alumno, m: materia): nota{
+        Complejidad: O(log m)
+
+        nota Res := s.materias[m][a].obtener; //O(log m) + O(1)
+    }
+
+    CantAlumnosConNota(in s: Sistema, in n: nota): nat{
+        Complejidad: O(log m)
+
+        return s.cantAlumnosConNota[n];
+    }
+
+    CantAlumnosAprobados(in s: Sistema, in m: materia): int{
+        int res := 0;
+        for i:=5...9 //O(1) //supongo que se aprueba con 6 como en esta materia
+            res+=s.cantAlumnosConNota[i];
+        return res;
+    }
+
+}

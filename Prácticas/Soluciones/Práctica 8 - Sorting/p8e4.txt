@@ -18,7 +18,7 @@ OrdenarSubsequenciasOrdenadas(Array(Array int) a)
         res := merge(OrdenarSubsequenciasOrdenadas(a[0...mitad]),
                      OrdenarSubsequenciasOrdenadas(a[mitad+1...a.length-1]))
 
-
+un super merge de 
 Complejidad: O(m log n) donde n es la cantidad total de elementos de todas las subsecuencias y n la cant de subsecuencias
 como vemos n se va diviendo de a 2, ==> n/2^i <==> i = log(n), el costo del merge es O(m) pues siempre se terminaran comparando los m elementos.
 
